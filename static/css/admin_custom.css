@@ -1,0 +1,145 @@
+/* static/css/admin_custom.css */
+
+/* Remove sublinhados */
+a:link, a:visited, a:hover, a:active {
+    text-decoration: none !important;
+}
+
+/* Ajusta cores dos links */
+a {
+    color: #6ea8fe !important;
+}
+
+a:hover {
+    color: #8bb9fe !important;
+}
+
+/* Melhora visualização das abas */
+.nav-tabs {
+    border-bottom: 2px solid #dee2e6 !important;
+    margin-bottom: 20px !important;
+    padding: 0 10px !important;
+}
+
+.nav-tabs .nav-link {
+    border: none !important;
+    color: #6c757d !important;
+    font-weight: 500 !important;
+    padding: 10px 20px !important;
+    margin-right: 5px !important;
+    border-radius: 30px 30px 0 0 !important;
+    transition: all 0.2s ease !important;
+}
+
+.nav-tabs .nav-link:hover {
+    background: #343a40 !important;
+    color: white !important;
+    border: none !important;
+}
+
+.nav-tabs .nav-link.active {
+    background: #375a7f !important;
+    color: white !important;
+    border: none !important;
+}
+
+/* Ajusta campos relacionados */
+.related-widget-wrapper {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.related-lookup {
+    margin-left: 5px;
+}
+
+/* Melhora aparência dos selects */
+select, input[type=text], input[type=number] {
+    background: #2c3136 !important;
+    border: 1px solid #454d55 !important;
+    color: #fff !important;
+    border-radius: 5px !important;
+    padding: 8px !important;
+}
+
+select:focus, input:focus {
+    border-color: #375a7f !important;
+    outline: none !important;
+}
+
+/* Ajusta botões de ação */
+.submit-row input {
+    background: #375a7f !important;
+    color: white !important;
+    border: none !important;
+    padding: 8px 20px !important;
+    border-radius: 5px !important;
+    font-weight: 500 !important;
+}
+
+.submit-row input:hover {
+    background: #2b4764 !important;
+}
+
+/* Ajusta mensagens de ajuda */
+.help {
+    color: #6c757d !important;
+    font-size: 0.85em !important;
+    margin-top: 5px !important;
+}
+
+/* Ajusta erros */
+.errorlist {
+    color: #dc3545 !important;
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 5px 0 !important;
+}
+
+/* Melhora visualização dos fieldsets */
+.module {
+    background: #2c3136 !important;
+    border: 1px solid #454d55 !important;
+    border-radius: 5px !important;
+    margin-bottom: 20px !important;
+}
+
+.module h2 {
+    background: #343a40 !important;
+    color: #fff !important;
+    padding: 10px 15px !important;
+    margin: 0 !important;
+    border-bottom: 1px solid #454d55 !important;
+}
+
+/* Ajusta inline groups (jogadores dentro de times) */
+.inline-group {
+    background: #2c3136 !important;
+    border: 1px solid #454d55 !important;
+    border-radius: 5px !important;
+}
+
+.inline-group h2 {
+    background: #343a40 !important;
+    color: #fff !important;
+}
+
+/* Ajusta tabelas de listagem */
+#result_list {
+    width: 100%;
+    background: #2c3136 !important;
+}
+
+#result_list thead th {
+    background: #343a40 !important;
+    color: #fff !important;
+    padding: 10px !important;
+}
+
+#result_list tbody tr {
+    border-bottom: 1px solid #454d55 !important;
+}
+
+#result_list tbody tr:hover {
+    background: #3a4148 !important;
+}

@@ -1,0 +1,891 @@
+<!-- templates/detalhe_time.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}PlacarFC - {{ time.nome }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* VARIÁVEIS - Consistência com o sistema */
+    :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary: #64748b;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --info: #3b82f6;
+        --dark: #0f172a;
+        --light: #f8fafc;
+        --gray-50: #f9fafb;
+        --gray-100: #f1f5f9;
+        --gray-200: #e2e8f0;
+        --gray-300: #cbd5e1;
+        --gray-400: #94a3b8;
+        --gray-500: #64748b;
+        --gray-600: #475569;
+        --gray-700: #334155;
+        --gray-800: #1e293b;
+        --gray-900: #0f172a;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+        --radius-sm: 0.375rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 0.75rem;
+        --radius-xl: 1rem;
+    }
+
+    /* CORES PARA APROVEITAMENTO */
+    .text-success {
+        color: var(--success) !important;
+    }
+    
+    .text-warning {
+        color: var(--warning) !important;
+    }
+    
+    .text-danger {
+        color: var(--danger) !important;
+    }
+    
+    .bg-success {
+        background-color: var(--success) !important;
+    }
+    
+    .bg-warning {
+        background-color: var(--warning) !important;
+    }
+    
+    .bg-danger {
+        background-color: var(--danger) !important;
+    }
+
+    /* HERO SECTION - CABEÇALHO DO TIME */
+    .team-hero {
+        background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%);
+        padding: 3rem 0 4rem 0;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .team-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><path d="M30 0 L60 30 L30 60 L0 30 Z" fill="rgba(255,255,255,0.02)"/></svg>');
+        opacity: 0.1;
+    }
+
+    .team-hero-content {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .team-logo-container {
+        flex-shrink: 0;
+    }
+
+    .team-logo-large {
+        width: 140px;
+        height: 140px;
+        object-fit: contain;
+        background: white;
+        border-radius: var(--radius-xl);
+        padding: 1rem;
+        box-shadow: var(--shadow-xl);
+        transition: transform 0.3s ease;
+    }
+
+    .team-logo-large:hover {
+        transform: scale(1.05);
+    }
+
+    .team-logo-placeholder-large {
+        width: 140px;
+        height: 140px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        font-weight: bold;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .team-info {
+        flex: 1;
+    }
+
+    .team-name {
+        font-size: 3rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 0.5rem;
+        line-height: 1.2;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .team-meta {
+        display: flex;
+        gap: 1.5rem;
+        color: var(--gray-300);
+        font-size: 1rem;
+    }
+
+    .team-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .team-meta-item i {
+        color: var(--primary);
+    }
+
+    /* GRID DE ESTATÍSTICAS - 6 CARDS POR LINHA */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 1.25rem 0.75rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        transition: all 0.3s ease;
+        border: 1px solid var(--gray-200);
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .stat-card:hover::before {
+        opacity: 1;
+    }
+
+    .stat-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .stat-icon {
+        width: 32px;
+        height: 32px;
+        background: var(--gray-100);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        font-size: 1rem;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: var(--gray-500);
+    }
+
+    .stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-trend {
+        font-size: 0.7rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin-top: auto;
+    }
+
+    .trend-up { color: var(--success); }
+    .trend-down { color: var(--danger); }
+    .trend-neutral { color: var(--gray-500); }
+
+    /* CORES SEMÂNTICAS */
+    .stat-card.vitorias .stat-icon { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+    .stat-card.empates .stat-icon { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+    .stat-card.derrotas .stat-icon { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+    .stat-card.gols-pro .stat-icon { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
+    .stat-card.gols-contra .stat-icon { background: rgba(100, 116, 139, 0.1); color: var(--secondary); }
+
+    /* BARRA DE APROVEITAMENTO */
+    .performance-card {
+        background: white;
+        padding: 2rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 2.5rem;
+        border: 1px solid var(--gray-200);
+    }
+
+    .performance-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .performance-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--gray-900);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .performance-percentage {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .performance-bar-container {
+        width: 100%;
+        height: 12px;
+        background: var(--gray-200);
+        border-radius: 999px;
+        overflow: hidden;
+        margin-bottom: 0.75rem;
+    }
+
+    .performance-bar-fill {
+        height: 100%;
+        border-radius: 999px;
+        transition: width 0.5s ease;
+    }
+
+    /* LEGENDA EXPLICATIVA */
+    .legenda-aproveitamento {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: var(--gray-50);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .legenda-titulo {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        font-size: 0.9rem;
+    }
+
+    .legenda-titulo i {
+        color: var(--primary);
+    }
+
+    .legenda-cores {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .legenda-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        color: var(--gray-600);
+    }
+
+    .legenda-cor {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+    }
+
+    .legenda-cor.verde {
+        background-color: var(--success);
+    }
+
+    .legenda-cor.amarelo {
+        background-color: var(--warning);
+    }
+
+    .legenda-cor.vermelho {
+        background-color: var(--danger);
+    }
+
+    .legenda-info {
+        font-size: 0.75rem;
+        color: var(--gray-500);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .legenda-info i {
+        color: var(--primary);
+        font-size: 0.7rem;
+    }
+
+    /* SEÇÕES DE JOGOS */
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--gray-900);
+    }
+
+    .section-title i {
+        color: var(--primary);
+    }
+
+    .matches-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .match-card {
+        background: white;
+        padding: 1.25rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--gray-200);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .match-card:hover {
+        box-shadow: var(--shadow-md);
+        border-color: var(--gray-300);
+        transform: translateY(-2px);
+    }
+
+    .match-teams {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+    }
+
+    .match-team {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: var(--gray-900);
+    }
+
+    .match-team-logo {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+        border-radius: var(--radius-sm);
+    }
+
+    .match-team-placeholder {
+        width: 28px;
+        height: 28px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        font-weight: bold;
+        border-radius: var(--radius-sm);
+    }
+
+    .match-result {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--gray-900);
+    }
+
+    .match-result.win {
+        color: var(--success);
+    }
+
+    .match-result.loss {
+        color: var(--danger);
+    }
+
+    .match-result.draw {
+        color: var(--warning);
+    }
+
+    .match-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: var(--gray-500);
+        font-size: 0.875rem;
+        padding-top: 0.75rem;
+        border-top: 1px dashed var(--gray-200);
+    }
+
+    .match-info i {
+        color: var(--primary);
+        width: 16px;
+    }
+
+    .match-badge {
+        background: var(--gray-100);
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        margin-left: auto;
+    }
+
+    .match-badge.futuro {
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 2px dashed var(--gray-200);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--gray-300);
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        color: var(--gray-500);
+        font-size: 1rem;
+    }
+
+    /* BOTÃO VOLTAR */
+    .back-button-container {
+        text-align: center;
+        margin: 3rem 0 2rem;
+    }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.875rem 2rem;
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 999px;
+        color: var(--gray-700);
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-back:hover {
+        background: var(--gray-100);
+        border-color: var(--gray-300);
+        transform: translateX(-4px);
+        box-shadow: var(--shadow-md);
+    }
+
+    /* RESPONSIVIDADE */
+    @media (max-width: 1200px) {
+        .stats-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .team-hero {
+            padding: 2rem 0;
+        }
+
+        .team-hero-content {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+
+        .team-name {
+            font-size: 2rem;
+        }
+
+        .team-meta {
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .matches-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .legenda-aproveitamento {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .legenda-cores {
+            width: 100%;
+            justify-content: space-between;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .legenda-cores {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HERO SECTION - CABEÇALHO DO TIME -->
+<div class="team-hero">
+    <div class="container">
+        <div class="team-hero-content">
+            <div class="team-logo-container">
+                {% if time.logo %}
+                    <img src="{{ time.logo.url }}" class="team-logo-large" alt="{{ time.nome }}">
+                {% else %}
+                    <div class="team-logo-placeholder-large">
+                        {{ time.nome|slice:":1" }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="team-info">
+                <h1 class="team-name">{{ time.nome }}</h1>
+                <div class="team-meta">
+                    <div class="team-meta-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Cadastrado em {{ time.data_criacao|date:"d/m/Y" }}</span>
+                    </div>
+                    <div class="team-meta-item">
+                        <i class="fas fa-futbol"></i>
+                        <span>{{ estatisticas.jogos }} jogos disputados</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CONTEÚDO PRINCIPAL -->
+<div class="container">
+    <!-- GRID DE ESTATÍSTICAS -->
+    <div class="stats-grid">
+        <!-- Pontos -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                <span class="stat-label">Pontos</span>
+            </div>
+            <div class="stat-value">
+                {% with pontos=estatisticas.vitorias|add:estatisticas.empates %}
+                    {{ pontos }}
+                {% endwith %}
+            </div>
+            <div class="stat-trend trend-neutral">
+                <i class="fas fa-minus-circle"></i>
+                <span>{{ estatisticas.jogos }} jogos</span>
+            </div>
+        </div>
+
+        <!-- Vitórias -->
+        <div class="stat-card vitorias">
+            <div class="stat-header">
+                <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+                <span class="stat-label">Vitórias</span>
+            </div>
+            <div class="stat-value">{{ estatisticas.vitorias }}</div>
+            <div class="stat-trend trend-up">
+                <i class="fas fa-arrow-up"></i>
+                <span>{{ estatisticas.vitorias }} jogos</span>
+            </div>
+        </div>
+
+        <!-- Empates -->
+        <div class="stat-card empates">
+            <div class="stat-header">
+                <div class="stat-icon"><i class="fas fa-handshake"></i></div>
+                <span class="stat-label">Empates</span>
+            </div>
+            <div class="stat-value">{{ estatisticas.empates }}</div>
+            <div class="stat-trend trend-neutral">
+                <i class="fas fa-minus"></i>
+                <span>{{ estatisticas.empates }} jogos</span>
+            </div>
+        </div>
+
+        <!-- Derrotas -->
+        <div class="stat-card derrotas">
+            <div class="stat-header">
+                <div class="stat-icon"><i class="fas fa-frown"></i></div>
+                <span class="stat-label">Derrotas</span>
+            </div>
+            <div class="stat-value">{{ estatisticas.derrotas }}</div>
+            <div class="stat-trend trend-down">
+                <i class="fas fa-arrow-down"></i>
+                <span>{{ estatisticas.derrotas }} jogos</span>
+            </div>
+        </div>
+
+        <!-- Gols Pró -->
+        <div class="stat-card gols-pro">
+            <div class="stat-header">
+                <div class="stat-icon"><i class="fas fa-bullseye"></i></div>
+                <span class="stat-label">Gols Pró</span>
+            </div>
+            <div class="stat-value">{{ estatisticas.gols_pro }}</div>
+            <div class="stat-trend trend-up">
+                <i class="fas fa-arrow-up"></i>
+                <span>Média {{ estatisticas.gols_pro|floatformat:1 }}</span>
+            </div>
+        </div>
+
+        <!-- Gols Contra -->
+        <div class="stat-card gols-contra">
+            <div class="stat-header">
+                <div class="stat-icon"><i class="fas fa-shield-alt"></i></div>
+                <span class="stat-label">Gols Contra</span>
+            </div>
+            <div class="stat-value">{{ estatisticas.gols_contra }}</div>
+            <div class="stat-trend trend-down">
+                <i class="fas fa-arrow-down"></i>
+                <span>Média {{ estatisticas.gols_contra|floatformat:1 }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD DE APROVEITAMENTO -->
+    <div class="performance-card">
+        <div class="performance-header">
+            <div class="performance-title">
+                <i class="fas fa-chart-pie"></i>
+                Aproveitamento
+            </div>
+            <div class="performance-percentage 
+                {% if estatisticas.aproveitamento >= 60 %}text-success
+                {% elif estatisticas.aproveitamento >= 40 %}text-warning
+                {% else %}text-danger{% endif %}">
+                {{ estatisticas.aproveitamento }}%
+            </div>
+        </div>
+        
+        <div class="performance-bar-container">
+            <div class="performance-bar-fill 
+                {% if estatisticas.aproveitamento >= 60 %}bg-success
+                {% elif estatisticas.aproveitamento >= 40 %}bg-warning
+                {% else %}bg-danger{% endif %}" 
+                 style="width: {{ estatisticas.aproveitamento }}%;"></div>
+        </div>
+
+        <!-- LEGENDA EXPLICATIVA -->
+        <div class="legenda-aproveitamento">
+            <div class="legenda-titulo">
+                <i class="fas fa-info-circle"></i>
+                <span>O que significa?</span>
+            </div>
+            
+            <div class="legenda-cores">
+                <div class="legenda-item">
+                    <div class="legenda-cor verde"></div>
+                    <span>≥ 60% - Bom desempenho</span>
+                </div>
+                <div class="legenda-item">
+                    <div class="legenda-cor amarelo"></div>
+                    <span>40% a 59% - Médio desempenho</span>
+                </div>
+                <div class="legenda-item">
+                    <div class="legenda-cor vermelho"></div>
+                    <span>&lt; 40% - Baixo desempenho</span>
+                </div>
+            </div>
+            
+            <div class="legenda-info">
+                <i class="fas fa-calculator"></i>
+                <span>Fórmula: (pontos conquistados ÷ pontos possíveis) × 100</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ÚLTIMOS JOGOS -->
+    <h3 class="section-title">
+        <i class="fas fa-history"></i>
+        Últimos Jogos
+    </h3>
+
+    <div class="matches-grid">
+        {% for jogo in jogos_realizados %}
+        <a href="#" class="match-card">
+            <div class="match-teams">
+                <div class="match-team">
+                    {% if jogo.time_casa.logo %}
+                        <img src="{{ jogo.time_casa.logo.url }}" class="match-team-logo">
+                    {% else %}
+                        <div class="match-team-placeholder">{{ jogo.time_casa.nome|slice:":1" }}</div>
+                    {% endif %}
+                    <span>{{ jogo.time_casa.nome|truncatechars:12 }}</span>
+                </div>
+                
+                <div class="match-result 
+                    {% if jogo.time_casa == time and jogo.gols_casa > jogo.gols_visitante %}win
+                    {% elif jogo.time_visitante == time and jogo.gols_visitante > jogo.gols_casa %}win
+                    {% elif jogo.gols_casa == jogo.gols_visitante %}draw
+                    {% else %}loss{% endif %}">
+                    {{ jogo.gols_casa }} - {{ jogo.gols_visitante }}
+                </div>
+                
+                <div class="match-team">
+                    <span>{{ jogo.time_visitante.nome|truncatechars:12 }}</span>
+                    {% if jogo.time_visitante.logo %}
+                        <img src="{{ jogo.time_visitante.logo.url }}" class="match-team-logo">
+                    {% else %}
+                        <div class="match-team-placeholder">{{ jogo.time_visitante.nome|slice:":1" }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="match-info">
+                <i class="far fa-calendar-alt"></i>
+                <span>{{ jogo.data_jogo|date:"d/m/Y" }}</span>
+                
+                {% if jogo.local %}
+                <i class="fas fa-map-marker-alt ms-2"></i>
+                <span>{{ jogo.local|truncatechars:15 }}</span>
+                {% endif %}
+                
+                <span class="match-badge">Realizado</span>
+            </div>
+        </a>
+        {% empty %}
+        <div class="empty-state">
+            <i class="fas fa-futbol"></i>
+            <p>Nenhum jogo realizado ainda</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- PRÓXIMOS JOGOS -->
+    <h3 class="section-title">
+        <i class="fas fa-calendar-check"></i>
+        Próximos Jogos
+    </h3>
+
+    <div class="matches-grid">
+        {% for jogo in jogos_futuros %}
+        <a href="#" class="match-card">
+            <div class="match-teams">
+                <div class="match-team">
+                    {% if jogo.time_casa.logo %}
+                        <img src="{{ jogo.time_casa.logo.url }}" class="match-team-logo">
+                    {% else %}
+                        <div class="match-team-placeholder">{{ jogo.time_casa.nome|slice:":1" }}</div>
+                    {% endif %}
+                    <span>{{ jogo.time_casa.nome|truncatechars:12 }}</span>
+                </div>
+                
+                <div class="match-result text-muted">
+                    VS
+                </div>
+                
+                <div class="match-team">
+                    <span>{{ jogo.time_visitante.nome|truncatechars:12 }}</span>
+                    {% if jogo.time_visitante.logo %}
+                        <img src="{{ jogo.time_visitante.logo.url }}" class="match-team-logo">
+                    {% else %}
+                        <div class="match-team-placeholder">{{ jogo.time_visitante.nome|slice:":1" }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="match-info">
+                <i class="far fa-calendar-alt"></i>
+                <span>{{ jogo.data_jogo|date:"d/m/Y H:i" }}</span>
+                
+                {% if jogo.local %}
+                <i class="fas fa-map-marker-alt ms-2"></i>
+                <span>{{ jogo.local|truncatechars:15 }}</span>
+                {% endif %}
+                
+                <span class="match-badge futuro">Agendado</span>
+            </div>
+        </a>
+        {% empty %}
+        <div class="empty-state">
+            <i class="fas fa-calendar-times"></i>
+            <p>Nenhum jogo futuro agendado</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- BOTÃO VOLTAR -->
+    <div class="back-button-container">
+        <a href="{% url 'lista_times' %}" class="btn-back">
+            <i class="fas fa-arrow-left"></i>
+            <span>Voltar para todos os times</span>
+        </a>
+    </div>
+</div>
+{% endblock %}

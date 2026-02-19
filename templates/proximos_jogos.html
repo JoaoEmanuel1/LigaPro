@@ -1,0 +1,666 @@
+<!-- templates/proximos_jogos.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}PlacarFC - Próximos Jogos{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* VARIÁVEIS - Consistência com o sistema */
+    :root {
+        --primary: #1b5e20;
+        --primary-dark: #0d3c0d;
+        --primary-light: #2e7d32;
+        --secondary: #64748b;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --info: #3b82f6;
+        --dark: #0f172a;
+        --light: #f8fafc;
+        --gray-50: #f9fafb;
+        --gray-100: #f1f5f9;
+        --gray-200: #e2e8f0;
+        --gray-300: #cbd5e1;
+        --gray-400: #94a3b8;
+        --gray-500: #64748b;
+        --gray-600: #475569;
+        --gray-700: #334155;
+        --gray-800: #1e293b;
+        --gray-900: #0f172a;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+        --radius-sm: 0.375rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 0.75rem;
+        --radius-xl: 1rem;
+    }
+
+    /* HEADER COMPACTO */
+    .page-header {
+        background: white;
+        padding: 1rem 0;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+    .header-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .header-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .header-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--gray-100);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        font-size: 1.25rem;
+    }
+
+    .header-text h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--gray-900);
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .header-text p {
+        font-size: 0.875rem;
+        color: var(--gray-500);
+        margin: 0;
+    }
+
+    .header-stats {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem 0;
+    }
+
+    .stat-item i {
+        color: var(--gray-400);
+        font-size: 1rem;
+    }
+
+    .stat-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .stat-value {
+        font-weight: 600;
+        color: var(--gray-900);
+        font-size: 0.9rem;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+        color: var(--gray-500);
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+    }
+
+    /* FILTRO POR RODADA */
+    .filtro-rodada {
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .filtro-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--gray-700);
+    }
+
+    .filtro-info i {
+        color: var(--primary);
+        font-size: 1.2rem;
+    }
+
+    .filtro-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-rodada {
+        padding: 0.5rem 1rem;
+        background: var(--gray-100);
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-md);
+        color: var(--gray-700);
+        font-weight: 500;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .btn-rodada:hover {
+        background: var(--gray-200);
+        border-color: var(--gray-300);
+        transform: translateY(-2px);
+    }
+
+    .btn-rodada.active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: white;
+    }
+
+    .btn-rodada.limpar {
+        background: var(--gray-200);
+        border-color: var(--gray-300);
+        color: var(--gray-700);
+    }
+
+    .btn-rodada.limpar:hover {
+        background: var(--gray-300);
+    }
+
+    /* BADGE DE RODADA */
+    .rodada-badge {
+        background: var(--primary);
+        color: white;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        margin-right: 0.5rem;
+    }
+
+    /* GRID DE JOGOS */
+    .matches-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 3rem;
+    }
+
+    /* CARD DE PARTIDA */
+    .match-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+        box-shadow: var(--shadow-sm);
+        transition: all 0.25s ease;
+        overflow: hidden;
+    }
+
+    .match-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--gray-300);
+    }
+
+    /* STATUS INDICATOR */
+    .match-status {
+        padding: 0.5rem 1rem;
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.2rem 0.6rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: white;
+    }
+
+    .status-badge i {
+        font-size: 0.6rem;
+    }
+
+    .competition-info {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.65rem;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* CONTEÚDO DO CARD */
+    .match-content {
+        padding: 1.25rem;
+    }
+
+    /* TIMES */
+    .teams-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .team-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.3rem;
+        flex: 1;
+    }
+
+    .team-logo-wrapper {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--gray-50);
+        border-radius: 50%;
+        padding: 0.3rem;
+    }
+
+    .team-logo {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+    }
+
+    .team-logo-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        font-weight: bold;
+        border-radius: 50%;
+    }
+
+    .team-name {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--gray-900);
+        text-align: center;
+        max-width: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* VS */
+    .score-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 60px;
+    }
+
+    .score-large {
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--gray-900);
+    }
+
+    .score-vs {
+        font-size: 0.6rem;
+        color: var(--gray-400);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 0.1rem;
+    }
+
+    /* DETALHES */
+    .match-details {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-top: 1px solid var(--gray-100);
+        border-bottom: 1px solid var(--gray-100);
+        margin: 0.5rem 0;
+        font-size: 0.7rem;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        color: var(--gray-600);
+    }
+
+    .detail-item i {
+        color: var(--primary);
+        width: 12px;
+        font-size: 0.6rem;
+    }
+
+    /* FOOTER */
+    .match-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 0.3rem;
+    }
+
+    .match-competition {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.65rem;
+        padding: 0.2rem 0.5rem;
+        background: var(--gray-100);
+        border-radius: 999px;
+        color: var(--gray-600);
+    }
+
+    .match-competition i {
+        color: var(--primary);
+        font-size: 0.6rem;
+    }
+
+    /* MENSAGEM DE RODADA SEM JOGOS */
+    .empty-rodada {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 2px dashed var(--gray-200);
+        grid-column: 1 / -1;
+    }
+
+    .empty-rodada i {
+        font-size: 3rem;
+        color: var(--gray-300);
+        margin-bottom: 1rem;
+    }
+
+    .empty-rodada h3 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-rodada p {
+        color: var(--gray-500);
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* ESTADO VAZIO GERAL */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 2px dashed var(--gray-200);
+        grid-column: 1 / -1;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--gray-300);
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h3 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: var(--gray-500);
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-admin {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.2rem;
+        background: var(--primary);
+        color: white;
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .btn-admin:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    /* RESPONSIVIDADE */
+    @media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .header-stats {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .filtro-rodada {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .filtro-buttons {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .matches-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HEADER COMPACTO -->
+<div class="page-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="header-title">
+                <div class="header-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Próximos Jogos</h1>
+                    <p>{{ jogos|length }} {{ jogos|length|pluralize:"jogo,jogos" }} agendados</p>
+                </div>
+            </div>
+            
+            <div class="header-stats">
+                <div class="stat-item">
+                    <i class="fas fa-futbol"></i>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ jogos|length }}</span>
+                        <span class="stat-label">Total</span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-layer-group"></i>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ todas_rodadas|length }}</span>
+                        <span class="stat-label">Rodadas</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- FILTRO POR RODADA -->
+    {% if todas_rodadas %}
+    <div class="filtro-rodada">
+        <div class="filtro-info">
+            <i class="fas fa-filter"></i>
+            <span>Filtrar por rodada:</span>
+        </div>
+        
+        <div class="filtro-buttons">
+            <a href="{% url 'proximos_jogos' %}" class="btn-rodada {% if not rodada_selecionada %}active{% endif %}">
+                Todas
+            </a>
+            
+            {% for r in todas_rodadas %}
+            <a href="?rodada={{ r }}" class="btn-rodada {% if rodada_selecionada == r %}active{% endif %}">
+                Rodada {{ r }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- LISTA DE JOGOS -->
+    <div class="matches-grid">
+        {% if jogos %}
+            {% for jogo in jogos %}
+            <!-- CARD DE PARTIDA FUTURA -->
+            <div class="match-card">
+                <!-- STATUS DA PARTIDA -->
+                <div class="match-status">
+                    <span>
+                        <span class="status-badge">
+                            <i class="fas fa-hourglass-half"></i>
+                            AGENDADO
+                        </span>
+                    </span>
+                    <span class="competition-info">
+                        <i class="fas fa-trophy"></i>
+                        Rodada {{ jogo.rodada|default:"1" }}
+                    </span>
+                </div>
+                
+                <div class="match-content">
+                    <!-- TIMES -->
+                    <div class="teams-container">
+                        <!-- Time Casa -->
+                        <div class="team-block">
+                            <div class="team-logo-wrapper">
+                                {% if jogo.time_casa.logo %}
+                                    <img src="{{ jogo.time_casa.logo.url }}" class="team-logo" alt="{{ jogo.time_casa.nome }}">
+                                {% else %}
+                                    <div class="team-logo-placeholder">
+                                        {{ jogo.time_casa.nome|slice:":1" }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <span class="team-name">{{ jogo.time_casa.nome|truncatechars:12 }}</span>
+                        </div>
+                        
+                        <!-- VS -->
+                        <div class="score-block">
+                            <div class="score-large">VS</div>
+                            <div class="score-vs">A CONFRONTAR</div>
+                        </div>
+                        
+                        <!-- Time Visitante -->
+                        <div class="team-block">
+                            <div class="team-logo-wrapper">
+                                {% if jogo.time_visitante.logo %}
+                                    <img src="{{ jogo.time_visitante.logo.url }}" class="team-logo" alt="{{ jogo.time_visitante.nome }}">
+                                {% else %}
+                                    <div class="team-logo-placeholder">
+                                        {{ jogo.time_visitante.nome|slice:":1" }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <span class="team-name">{{ jogo.time_visitante.nome|truncatechars:12 }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- INFORMAÇÕES -->
+                    <div class="match-details">
+                        <div class="detail-item">
+                            <i class="far fa-calendar-alt"></i>
+                            <span>{{ jogo.data_jogo|date:"d/m/Y" }} às {{ jogo.data_jogo|date:"H:i" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>{{ jogo.local|default:"Local a definir" }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- RODADA -->
+                    <div class="match-footer">
+                        <div class="match-competition">
+                            <i class="fas fa-layer-group"></i>
+                            <span>Rodada {{ jogo.rodada|default:"1" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <!-- MENSAGEM QUANDO NÃO HÁ JOGOS -->
+            <div class="empty-rodada">
+                <i class="fas fa-calendar-times"></i>
+                {% if rodada_selecionada %}
+                <h3>Nenhum jogo na Rodada {{ rodada_selecionada }}</h3>
+                <p>Não há jogos agendados para esta rodada no momento.</p>
+                <a href="{% url 'proximos_jogos' %}" class="btn-admin">
+                    <i class="fas fa-arrow-left"></i>
+                    Ver todas as rodadas
+                </a>
+                {% else %}
+                <h3>Nenhum jogo futuro agendado</h3>
+                <p>Os próximos confrontos aparecerão aqui assim que forem cadastrados.</p>
+                {% endif %}
+                
+                {% if user.is_superuser %}
+                <a href="/admin/core/jogo/add/" class="btn-admin" style="margin-top: 1rem;">
+                    <i class="fas fa-plus-circle"></i>
+                    Cadastrar Jogo
+                </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

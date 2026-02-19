@@ -1,0 +1,596 @@
+<!-- templates/tabela.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}PlacarFC - Classificação{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* VARIÁVEIS - Consistência com o sistema */
+    :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary: #64748b;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --info: #3b82f6;
+        --dark: #0f172a;
+        --light: #f8fafc;
+        --gray-50: #f9fafb;
+        --gray-100: #f1f5f9;
+        --gray-200: #e2e8f0;
+        --gray-300: #cbd5e1;
+        --gray-400: #94a3b8;
+        --gray-500: #64748b;
+        --gray-600: #475569;
+        --gray-700: #334155;
+        --gray-800: #1e293b;
+        --gray-900: #0f172a;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+        --radius-sm: 0.375rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 0.75rem;
+        --radius-xl: 1rem;
+    }
+
+    /* HEADER COMPACTO */
+    .page-header {
+        background: white;
+        padding: 1rem 0;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+    .header-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .header-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .header-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--gray-100);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        font-size: 1.25rem;
+    }
+
+    .header-text h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--gray-900);
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .header-text p {
+        font-size: 0.875rem;
+        color: var(--gray-500);
+        margin: 0;
+    }
+
+    .header-stats {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem 0;
+    }
+
+    .stat-item i {
+        color: var(--gray-400);
+        font-size: 1rem;
+    }
+
+    .stat-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .stat-value {
+        font-weight: 600;
+        color: var(--gray-900);
+        font-size: 0.9rem;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+        color: var(--gray-500);
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+    }
+
+    /* TABELA DE CLASSIFICAÇÃO - DESIGN LIMPO */
+    .table-wrapper {
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 1.5rem;
+    }
+
+    .classification-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+
+    .classification-table thead th {
+        background: var(--gray-50);
+        color: var(--gray-600);
+        font-weight: 500;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        padding: 0.875rem 0.5rem;
+        border-bottom: 1px solid var(--gray-200);
+        white-space: nowrap;
+    }
+
+    .classification-table tbody tr {
+        border-bottom: 1px solid var(--gray-100);
+        transition: background-color 0.15s ease;
+    }
+
+    .classification-table tbody tr:hover {
+        background-color: var(--gray-50);
+    }
+
+    .classification-table tbody td {
+        padding: 1rem 0.5rem;
+        color: var(--gray-700);
+    }
+
+    /* POSIÇÃO */
+    .position-cell {
+        width: 50px;
+        text-align: center;
+        font-weight: 500;
+    }
+
+    .position-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        background: var(--gray-100);
+        color: var(--gray-700);
+    }
+
+    .position-number.position-1 {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: white;
+    }
+
+    .position-number.position-2 {
+        background: linear-gradient(135deg, #9ca3af, #6b7280);
+        color: white;
+    }
+
+    .position-number.position-3 {
+        background: linear-gradient(135deg, #b45309, #92400e);
+        color: white;
+    }
+
+    /* TIME */
+    .team-cell {
+        min-width: 180px;
+    }
+
+    .team-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .team-logo-mini {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+        background: var(--gray-100);
+        border-radius: var(--radius-sm);
+        padding: 0.125rem;
+    }
+
+    .team-logo-placeholder-mini {
+        width: 28px;
+        height: 28px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        font-weight: 600;
+        border-radius: var(--radius-sm);
+    }
+
+    .team-name {
+        font-weight: 500;
+        color: var(--gray-900);
+    }
+
+    /* PONTOS */
+    .points-cell {
+        font-weight: 600;
+        color: var(--gray-900);
+        text-align: center;
+    }
+
+    /* COLUNAS NUMÉRICAS */
+    .numeric-cell {
+        text-align: center;
+        color: var(--gray-700);
+    }
+
+    /* SALDO DE GOLS */
+    .gd-positive {
+        color: var(--success);
+        font-weight: 500;
+        text-align: center;
+    }
+
+    .gd-negative {
+        color: var(--danger);
+        font-weight: 500;
+        text-align: center;
+    }
+
+    .gd-zero {
+        color: var(--gray-500);
+        text-align: center;
+    }
+
+    /* LEGENDA DISCRETA */
+    .legend-section {
+        margin: 1rem 0 2rem;
+        padding: 1rem;
+        background: var(--gray-50);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+    }
+
+    .legend-grid {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        color: var(--gray-600);
+    }
+
+    .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+    }
+
+    .legend-dot.gold {
+        background: #f59e0b;
+    }
+
+    .legend-dot.silver {
+        background: #6b7280;
+    }
+
+    .legend-dot.bronze {
+        background: #b45309;
+    }
+
+    .legend-dot.green {
+        background: var(--success);
+    }
+
+    .legend-dot.red {
+        background: var(--danger);
+    }
+
+    .tiebreaker {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-left: auto;
+        font-size: 0.75rem;
+        color: var(--gray-500);
+    }
+
+    .tiebreaker i {
+        color: var(--gray-400);
+    }
+
+    /* ESTADO VAZIO */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 1px dashed var(--gray-300);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--gray-300);
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: var(--gray-500);
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-admin {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        background: var(--primary);
+        color: white;
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.15s ease;
+    }
+
+    .btn-admin:hover {
+        background: var(--primary-dark);
+    }
+
+    .btn-admin.secondary {
+        background: var(--gray-100);
+        color: var(--gray-700);
+    }
+
+    .btn-admin.secondary:hover {
+        background: var(--gray-200);
+    }
+
+    /* RESPONSIVIDADE */
+    @media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .header-stats {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .classification-table {
+            min-width: 800px;
+        }
+
+        .legend-grid {
+            gap: 1rem;
+        }
+
+        .tiebreaker {
+            margin-left: 0;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .team-cell {
+            min-width: 150px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HEADER COMPACTO -->
+<div class="page-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="header-title">
+                <div class="header-icon">
+                    <i class="fas fa-table"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Classificação</h1>
+                    <p>Temporada {% now "Y" %} • {{ dados_times|length }} times</p>
+                </div>
+            </div>
+            
+            <div class="header-stats">
+                <div class="stat-item">
+                    <i class="fas fa-futbol"></i>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ dados_times|length }}</span>
+                        <span class="stat-label">Times</span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <div class="stat-info">
+                        <span class="stat-value">1ª</span>
+                        <span class="stat-label">Fase</span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-chart-line"></i>
+                    <div class="stat-info">
+                        <span class="stat-value">38</span>
+                        <span class="stat-label">Rodadas</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CONTEÚDO PRINCIPAL -->
+<div class="container">
+    {% if dados_times %}
+    <!-- TABELA DE CLASSIFICAÇÃO -->
+    <div class="table-wrapper">
+        <table class="classification-table">
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>Time</th>
+                    <th class="numeric-cell">Pts</th>
+                    <th class="numeric-cell">J</th>
+                    <th class="numeric-cell">V</th>
+                    <th class="numeric-cell">E</th>
+                    <th class="numeric-cell">D</th>
+                    <th class="numeric-cell">GP</th>
+                    <th class="numeric-cell">GC</th>
+                    <th class="numeric-cell">SG</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in dados_times %}
+                <tr>
+                    <!-- POSIÇÃO -->
+                    <td class="position-cell">
+                        <span class="position-number 
+                            {% if forloop.counter == 1 %}position-1
+                            {% elif forloop.counter == 2 %}position-2
+                            {% elif forloop.counter == 3 %}position-3{% endif %}">
+                            {{ forloop.counter }}
+                        </span>
+                    </td>
+                    
+                    <!-- TIME -->
+                    <td class="team-cell">
+                        <div class="team-info">
+                            {% if item.time.logo %}
+                                <img src="{{ item.time.logo.url }}" class="team-logo-mini" alt="{{ item.time.nome }}">
+                            {% else %}
+                                <div class="team-logo-placeholder-mini">
+                                    {{ item.time.nome|slice:":1" }}
+                                </div>
+                            {% endif %}
+                            <span class="team-name">{{ item.time.nome }}</span>
+                        </div>
+                    </td>
+                    
+                    <!-- PONTOS -->
+                    <td class="points-cell">{{ item.pontos }}</td>
+                    
+                    <!-- JOGOS -->
+                    <td class="numeric-cell">{{ item.jogos }}</td>
+                    
+                    <!-- VITÓRIAS -->
+                    <td class="numeric-cell">{{ item.vitorias }}</td>
+                    
+                    <!-- EMPATES -->
+                    <td class="numeric-cell">{{ item.empates }}</td>
+                    
+                    <!-- DERROTAS -->
+                    <td class="numeric-cell">{{ item.derrotas }}</td>
+                    
+                    <!-- GOLS PRÓ -->
+                    <td class="numeric-cell">{{ item.gols_pro }}</td>
+                    
+                    <!-- GOLS CONTRA -->
+                    <td class="numeric-cell">{{ item.gols_contra }}</td>
+                    
+                    <!-- SALDO DE GOLS -->
+                    <td class="numeric-cell {% if item.saldo_gols > 0 %}gd-positive{% elif item.saldo_gols < 0 %}gd-negative{% endif %}">
+                        {% if item.saldo_gols > 0 %}+{% endif %}{{ item.saldo_gols }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- LEGENDA DISCRETA -->
+    <div class="legend-section">
+        <div class="legend-grid">
+            <div class="legend-item">
+                <span class="legend-dot gold"></span>
+                <span>1º lugar</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot silver"></span>
+                <span>2º lugar</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot bronze"></span>
+                <span>3º lugar</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot green"></span>
+                <span>Saldo positivo</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot red"></span>
+                <span>Saldo negativo</span>
+            </div>
+            
+            <div class="tiebreaker">
+                <i class="fas fa-balance-scale"></i>
+                <span>Desempate: Pontos • Vitórias • Saldo • Gols Pró</span>
+            </div>
+        </div>
+    </div>
+    
+    {% else %}
+    <!-- ESTADO VAZIO -->
+    <div class="empty-state">
+        <i class="fas fa-table"></i>
+        <h3>Nenhum time cadastrado</h3>
+        <p>Cadastre times e jogos para visualizar a classificação</p>
+        {% if user.is_superuser %}
+        <div class="d-flex gap-2 justify-content-center">
+            <a href="/admin/core/time/add/" class="btn-admin">
+                <i class="fas fa-plus-circle"></i>
+                Cadastrar Time
+            </a>
+            <a href="/admin/core/jogo/add/" class="btn-admin secondary">
+                <i class="fas fa-plus-circle"></i>
+                Cadastrar Jogo
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

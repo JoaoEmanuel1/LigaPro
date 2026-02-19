@@ -1,0 +1,520 @@
+<!-- templates/lista_times.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}PlacarFC - Times do Campeonato{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* VARIÁVEIS - Consistência com o sistema */
+    :root {
+        --primary: #1b5e20;
+        --primary-dark: #0d3c0d;
+        --primary-light: #2e7d32;
+        --secondary: #64748b;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --dark: #0f172a;
+        --light: #f8fafc;
+        --gray-50: #f9fafb;
+        --gray-100: #f1f5f9;
+        --gray-200: #e2e8f0;
+        --gray-300: #cbd5e1;
+        --gray-400: #94a3b8;
+        --gray-500: #64748b;
+        --gray-600: #475569;
+        --gray-700: #334155;
+        --gray-800: #1e293b;
+        --gray-900: #0f172a;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+        --radius-sm: 0.375rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 0.75rem;
+        --radius-xl: 1rem;
+    }
+
+    /* CORES PARA SALDO DE GOLS */
+    .text-success {
+        color: var(--success) !important;
+    }
+
+    .text-danger {
+        color: var(--danger) !important;
+    }
+
+    .text-warning {
+        color: var(--warning) !important;
+    }
+
+    /* HEADER COMPACTO DA PÁGINA */
+    .page-header {
+        background: white;
+        padding: 1rem 0;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+    .header-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .header-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .header-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--gray-100);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        font-size: 1.25rem;
+    }
+
+    .header-text h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--gray-900);
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .header-text p {
+        font-size: 0.875rem;
+        color: var(--gray-500);
+        margin: 0;
+    }
+
+    .header-stats {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem 0;
+    }
+
+    .stat-item i {
+        color: var(--gray-400);
+        font-size: 1rem;
+    }
+
+    .stat-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .stat-value {
+        font-weight: 600;
+        color: var(--gray-900);
+        font-size: 0.9rem;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+        color: var(--gray-500);
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+    }
+
+    /* GRID DE TIMES */
+    .teams-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    /* CARDS */
+    .team-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+        box-shadow: var(--shadow-sm);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .team-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--gray-300);
+    }
+
+    .team-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary), var(--primary-light));
+        opacity: 0;
+        transition: opacity 0.25s ease;
+    }
+
+    .team-card:hover::after {
+        opacity: 1;
+    }
+
+    .card-content {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    /* LOGO */
+    .team-logo-wrapper {
+        width: 100%;
+        height: 160px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.25rem;
+        background: var(--gray-50);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+    }
+
+    .team-logo {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        transition: transform 0.25s ease;
+    }
+
+    .team-card:hover .team-logo {
+        transform: scale(1.02);
+    }
+
+    .team-logo-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
+        color: var(--gray-500);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        font-weight: 600;
+        border-radius: var(--radius-md);
+    }
+
+    /* INFORMAÇÕES DO TIME */
+    .team-info {
+        text-align: left;
+        margin-bottom: 1rem;
+    }
+
+    .team-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin: 0 0 0.25rem 0;
+        line-height: 1.3;
+    }
+
+    .team-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.75rem;
+        color: var(--gray-500);
+    }
+
+    .team-meta i {
+        color: var(--gray-400);
+        font-size: 0.7rem;
+    }
+
+    /* CAMPANHA RÁPIDA */
+    .team-campaign {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        margin: 0.5rem 0 0.75rem 0;
+        border-top: 1px solid var(--gray-100);
+        border-bottom: 1px solid var(--gray-100);
+    }
+
+    .campaign-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+    }
+
+    .campaign-value {
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--gray-900);
+    }
+
+    .campaign-label {
+        font-size: 0.65rem;
+        color: var(--gray-500);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    /* AÇÃO */
+    .card-action {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: auto;
+        padding-top: 0.75rem;
+    }
+
+    .action-text {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .action-icon {
+        width: 28px;
+        height: 28px;
+        background: rgba(27, 94, 32, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        font-size: 0.75rem;
+        transition: all 0.2s ease;
+    }
+
+    .team-card:hover .action-icon {
+        background: var(--primary);
+        color: white;
+        transform: translateX(4px);
+    }
+
+    /* ESTADO VAZIO */
+    .empty-state {
+        text-align: center;
+        padding: 5rem 2rem;
+        background: white;
+        border-radius: var(--radius-xl);
+        border: 2px dashed var(--gray-200);
+        grid-column: 1 / -1;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--gray-300);
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: var(--gray-500);
+        margin-bottom: 2rem;
+    }
+
+    .empty-state .btn-admin {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.875rem 2rem;
+        background: var(--primary);
+        color: white;
+        border-radius: var(--radius-lg);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .empty-state .btn-admin:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    /* RESPONSIVIDADE */
+    @media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .header-stats {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .teams-grid {
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1rem;
+        }
+
+        .team-logo-wrapper {
+            height: 140px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .header-stats {
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .teams-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HEADER COMPACTO DA PÁGINA -->
+<div class="page-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="header-title">
+                <div class="header-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Times</h1>
+                    <p>{{ dados_times|length }} {{ dados_times|length|pluralize:"time,times" }} no campeonato</p>
+                </div>
+            </div>
+            
+            <div class="header-stats">
+                <div class="stat-item">
+                    <i class="fas fa-futbol"></i>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ dados_times|length }}</span>
+                        <span class="stat-label">Total</span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <div class="stat-info">
+                        <span class="stat-value">1ª</span>
+                        <span class="stat-label">Fase</span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-chart-line"></i>
+                    <div class="stat-info">
+                        <span class="stat-value">38</span>
+                        <span class="stat-label">Rodadas</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- LISTA DE TIMES EM CARDS -->
+<div class="container">
+    <div class="teams-grid">
+        {% for item in dados_times %}
+        <!-- CARD TOTALMENTE CLICÁVEL -->
+        <a href="{% url 'detalhe_time' item.time.id %}" class="team-card">
+            <div class="card-content">
+                <!-- LOGO PADRONIZADA -->
+                <div class="team-logo-wrapper">
+                    {% if item.time.logo %}
+                        <img src="{{ item.time.logo.url }}" class="team-logo" alt="{{ item.time.nome }}">
+                    {% else %}
+                        <div class="team-logo-placeholder">
+                            {{ item.time.nome|slice:":1" }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- INFORMAÇÕES BÁSICAS -->
+                <div class="team-info">
+                    <h3 class="team-name">{{ item.time.nome }}</h3>
+                    <div class="team-meta">
+                        <span>
+                            <i class="fas fa-calendar-alt"></i>
+                            {{ item.time.data_criacao|date:"d/m/Y" }}
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- CAMPANHA RÁPIDA COM DADOS REAIS -->
+                <div class="team-campaign">
+                    <div class="campaign-item">
+                        <span class="campaign-value">{{ item.pontos }}</span>
+                        <span class="campaign-label">PTS</span>
+                    </div>
+                    <div class="campaign-item">
+                        <span class="campaign-value">{{ item.jogos }}</span>
+                        <span class="campaign-label">J</span>
+                    </div>
+                    <div class="campaign-item">
+                        <span class="campaign-value {% if item.saldo_gols > 0 %}text-success{% elif item.saldo_gols < 0 %}text-danger{% endif %}">
+                            {{ item.saldo_gols }}
+                        </span>
+                        <span class="campaign-label">SG</span>
+                    </div>
+                </div>
+                
+                <!-- AÇÃO SIMPLIFICADA -->
+                <div class="card-action">
+                    <span class="action-text">
+                        Ver detalhes
+                        <i class="fas fa-arrow-right d-none d-sm-inline"></i>
+                    </span>
+                    <span class="action-icon">
+                        <i class="fas fa-chevron-right"></i>
+                    </span>
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <!-- ESTADO VAZIO -->
+        <div class="empty-state">
+            <i class="fas fa-users"></i>
+            <h3>Nenhum time cadastrado</h3>
+            <p>Os times aparecerão aqui após serem cadastrados no admin</p>
+            {% if user.is_superuser %}
+            <a href="/admin/core/time/add/" class="btn-admin">
+                <i class="fas fa-plus-circle"></i>
+                Cadastrar Primeiro Time
+            </a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

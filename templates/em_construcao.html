@@ -1,0 +1,20 @@
+<!-- templates/em_construcao.html -->
+{% extends 'base.html' %}
+
+{% block title %}PlacarFC - {{ pagina }} (Em Construção){% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <div class="display-1 text-muted mb-4">
+        <i class="fas fa-tools"></i>
+    </div>
+    <h1 class="display-4 mb-3">{{ pagina }}</h1>
+    <p class="lead text-muted mb-4">
+        Esta página está em construção. Em breve você poderá ver os {{ pagina|lower }} aqui!
+    </p>
+    <a href="{% url 'lista_times' %}" class="btn btn-primary btn-lg">
+        <i class="fas fa-arrow-left me-2"></i>
+        Voltar para Times
+    </a>
+</div>
+{% endblock %}
