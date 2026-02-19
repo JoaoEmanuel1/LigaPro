@@ -26,7 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core',  # nosso app principal
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -116,18 +116,18 @@ LOGOUT_REDIRECT_URL = '/times/'
 LOGIN_URL = '/accounts/login/'
 
 
-# JAZZMIN SETTINGS - CORRIGIDO
+# JAZZMIN SETTINGS - TEMA CLARO COM ESCRITA PRETA
 JAZZMIN_SETTINGS = {
     # Título do site
-    "site_title": "PlacarFC Admin",
-    "site_header": "PlacarFC",
-    "site_brand": "⚽ PlacarFC - Administração",
-    "welcome_sign": "Bem-vindo ao Painel do Campeonato",
-    "copyright": "PlacarFC © 2026",
+    "site_title": "LigaPro Admin",
+    "site_header": "LigaPro",
+    "site_brand": "🏆 LigaPro - Administração",
+    "welcome_sign": "Bem-vindo ao Painel Administrativo",
+    "copyright": "LigaPro © 2026",
     
-    # Tema
-    "theme": "darkly",
-    "dark_mode_theme": "darkly",
+    # TEMA CLARO
+    "theme": "flatly",
+    "dark_mode_theme": "flatly",
     
     # Logos
     "site_logo": None,
@@ -139,7 +139,6 @@ JAZZMIN_SETTINGS = {
         {"name": "📊 Dashboard", "url": "admin:index", "permissions": ["auth.view_user"]},
         {"name": "⚽ Times", "url": "/admin/core/time/"},
         {"name": "📅 Jogos", "url": "/admin/core/jogo/"},
-        {"name": "👥 Jogadores", "url": "/admin/core/jogador/"},
     ],
     
     # Ícones
@@ -149,7 +148,6 @@ JAZZMIN_SETTINGS = {
         "auth.Group": "fas fa-users",
         "core.Time": "fas fa-futbol",
         "core.Jogo": "fas fa-calendar-alt",
-        "core.Jogador": "fas fa-user-plus",
     },
     
     # Ícones para ações
@@ -166,14 +164,13 @@ JAZZMIN_SETTINGS = {
     # Links relacionados
     "show_related_fields": True,
     
-    # CONFIGURAÇÃO DAS ABAS - CORRIGIDA
+    # Configuração das abas
     "changeform_format": "horizontal_tabs",
     "changeform_format_overrides": {
         "auth.user": "collapsible",
         "auth.group": "vertical_tabs",
         "core.time": "horizontal_tabs",
-        "core.jogo": "single",  # Mantém abas mas com correção
-        "core.jogador": "horizontal_tabs",
+        "core.jogo": "single",
     },
     
     # Upload de imagens
@@ -182,7 +179,7 @@ JAZZMIN_SETTINGS = {
     # CSS personalizado
     "custom_css": "/static/css/admin_custom.css",
     
-    # UI Builder (desativado após configurado)
+    # UI Builder (desativado)
     "show_ui_builder": False,
 }
 
@@ -193,21 +190,21 @@ JAZZMIN_UI_TWEAKS = {
     "brand_small_text": False,
     "brand_colour": False,
     "accent": "accent-primary",
-    "navbar": "navbar-dark",
+    "navbar": "navbar-light bg-white",
     "no_navbar_border": False,
     "navbar_fixed": False,
     "layout_boxed": False,
     "footer_fixed": False,
     "sidebar_fixed": False,
-    "sidebar": "sidebar-dark-primary",
+    "sidebar": "sidebar-light-primary",
     "sidebar_nav_small_text": False,
     "sidebar_disable_expand": False,
     "sidebar_nav_child_indent": False,
     "sidebar_nav_compact_style": False,
     "sidebar_nav_legacy_style": False,
     "sidebar_nav_flat_style": False,
-    "theme": "darkly",
-    "dark_mode_theme": "darkly",
+    "theme": "flatly",
+    "dark_mode_theme": "flatly",
     "button_classes": {
         "primary": "btn-primary",
         "secondary": "btn-secondary",

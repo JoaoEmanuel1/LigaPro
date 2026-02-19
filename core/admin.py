@@ -7,6 +7,20 @@ from .models import Time, Jogo
 class TimeAdmin(admin.ModelAdmin):
     list_display = ['nome', 'data_criacao']
     search_fields = ['nome']
+    list_per_page = 20
+    
+    fieldsets = (
+        ('Informações Básicas', {
+            'fields': ('nome', 'logo'),
+            'classes': ('wide',)
+        }),
+        ('Controle', {
+            'fields': ('data_criacao',),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    readonly_fields = ['data_criacao']
 
 
 @admin.register(Jogo)
@@ -20,13 +34,19 @@ class JogoAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Times', {
-            'fields': ('time_casa', 'time_visitante')
+            'fields': ('time_casa', 'time_visitante'),
+            'classes': ('wide',),
+            'description': 'Selecione os times participantes'
         }),
         ('Resultado', {
             'fields': ('gols_casa', 'gols_visitante', 'realizado'),
+            'classes': ('wide',),
+            'description': 'Preencha apenas se o jogo já foi realizado'
         }),
         ('Informações do Jogo', {
-            'fields': ('data_jogo', 'local', 'rodada'),  # <-- RODADA ADICIONADA
+            'fields': ('data_jogo', 'local', 'rodada'),
+            'classes': ('wide',),
+            'description': 'Data, horário, local e rodada da partida'
         }),
     )
     

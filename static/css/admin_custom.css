@@ -1,49 +1,181 @@
 /* static/css/admin_custom.css */
 
+/* ESTILO GERAL - TEMA CLARO COM TEXTO PRETO */
+:root {
+    --primary: #1b5e20;
+    --primary-light: #2e7d32;
+    --text-dark: #2c3e50;
+    --text-light: #7f8c8d;
+    --border-color: #ecf0f1;
+    --bg-light: #f8f9fa;
+    --bg-white: #ffffff;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+}
+
 /* Remove sublinhados */
 a:link, a:visited, a:hover, a:active {
     text-decoration: none !important;
 }
 
-/* Ajusta cores dos links */
+/* Links */
 a {
-    color: #6ea8fe !important;
+    color: var(--primary) !important;
 }
 
 a:hover {
-    color: #8bb9fe !important;
+    color: var(--primary-light) !important;
 }
 
-/* Melhora visualização das abas */
+/* Navbar superior */
+.navbar {
+    background: white !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+
+.navbar .nav-link {
+    color: var(--text-dark) !important;
+}
+
+.navbar .nav-link:hover {
+    background: var(--bg-light) !important;
+}
+
+.navbar .nav-link.active {
+    background: rgba(27, 94, 32, 0.1) !important;
+    color: var(--primary) !important;
+}
+
+/* Sidebar */
+.sidebar {
+    background: white !important;
+    border-right: 1px solid var(--border-color) !important;
+}
+
+.sidebar .nav-link {
+    color: var(--text-dark) !important;
+}
+
+.sidebar .nav-link:hover {
+    background: var(--bg-light) !important;
+    color: var(--primary) !important;
+}
+
+.sidebar .nav-link.active {
+    background: rgba(27, 94, 32, 0.1) !important;
+    color: var(--primary) !important;
+    border-left: 3px solid var(--primary) !important;
+}
+
+/* Conteúdo principal */
+.content-wrapper {
+    background: var(--bg-light) !important;
+}
+
+/* Cards */
+.card {
+    background: white !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+
+.card-header {
+    background: var(--bg-light) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    color: var(--text-dark) !important;
+    font-weight: 600 !important;
+}
+
+/* Tabelas */
+.table {
+    color: var(--text-dark) !important;
+    background: white !important;
+}
+
+.table thead th {
+    background: var(--bg-light) !important;
+    color: var(--text-dark) !important;
+    border-bottom: 2px solid var(--border-color) !important;
+    font-weight: 600 !important;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+.table tbody tr:hover {
+    background: var(--bg-light) !important;
+}
+
+/* Formulários */
+.form-control, .form-select {
+    background: white !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-dark) !important;
+    border-radius: 6px !important;
+    padding: 0.5rem 0.75rem !important;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(27, 94, 32, 0.15) !important;
+}
+
+.form-label {
+    color: var(--text-dark) !important;
+    font-weight: 500 !important;
+    margin-bottom: 0.3rem !important;
+}
+
+/* Botões */
+.btn-primary {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: white !important;
+}
+
+.btn-primary:hover {
+    background: var(--primary-light) !important;
+    border-color: var(--primary-light) !important;
+}
+
+.btn-secondary {
+    background: var(--text-light) !important;
+    border-color: var(--text-light) !important;
+    color: white !important;
+}
+
+/* Abas */
 .nav-tabs {
-    border-bottom: 2px solid #dee2e6 !important;
+    border-bottom: 1px solid var(--border-color) !important;
     margin-bottom: 20px !important;
-    padding: 0 10px !important;
+    background: white !important;
+    padding: 10px 10px 0 10px !important;
 }
 
 .nav-tabs .nav-link {
     border: none !important;
-    color: #6c757d !important;
+    color: var(--text-dark) !important;
     font-weight: 500 !important;
     padding: 10px 20px !important;
-    margin-right: 5px !important;
-    border-radius: 30px 30px 0 0 !important;
+    border-radius: 6px 6px 0 0 !important;
     transition: all 0.2s ease !important;
 }
 
 .nav-tabs .nav-link:hover {
-    background: #343a40 !important;
-    color: white !important;
-    border: none !important;
+    background: var(--bg-light) !important;
+    color: var(--primary) !important;
 }
 
 .nav-tabs .nav-link.active {
-    background: #375a7f !important;
-    color: white !important;
-    border: none !important;
+    background: white !important;
+    color: var(--primary) !important;
+    border-bottom: 2px solid var(--primary) !important;
 }
 
-/* Ajusta campos relacionados */
+/* Campos relacionados */
 .related-widget-wrapper {
     display: inline-block;
     margin-right: 10px;
@@ -53,93 +185,57 @@ a:hover {
     margin-left: 5px;
 }
 
-/* Melhora aparência dos selects */
-select, input[type=text], input[type=number] {
-    background: #2c3136 !important;
-    border: 1px solid #454d55 !important;
-    color: #fff !important;
-    border-radius: 5px !important;
-    padding: 8px !important;
-}
-
-select:focus, input:focus {
-    border-color: #375a7f !important;
-    outline: none !important;
-}
-
-/* Ajusta botões de ação */
-.submit-row input {
-    background: #375a7f !important;
-    color: white !important;
-    border: none !important;
-    padding: 8px 20px !important;
-    border-radius: 5px !important;
-    font-weight: 500 !important;
-}
-
-.submit-row input:hover {
-    background: #2b4764 !important;
-}
-
-/* Ajusta mensagens de ajuda */
-.help {
-    color: #6c757d !important;
-    font-size: 0.85em !important;
-    margin-top: 5px !important;
-}
-
-/* Ajusta erros */
+/* Mensagens de erro */
 .errorlist {
-    color: #dc3545 !important;
+    color: #e74c3c !important;
     list-style: none !important;
     padding: 0 !important;
     margin: 5px 0 !important;
+    font-size: 0.9rem !important;
 }
 
-/* Melhora visualização dos fieldsets */
-.module {
-    background: #2c3136 !important;
-    border: 1px solid #454d55 !important;
-    border-radius: 5px !important;
-    margin-bottom: 20px !important;
+/* Mensagens de sucesso */
+.successlist {
+    color: #27ae60 !important;
 }
 
-.module h2 {
-    background: #343a40 !important;
-    color: #fff !important;
-    padding: 10px 15px !important;
-    margin: 0 !important;
-    border-bottom: 1px solid #454d55 !important;
-}
-
-/* Ajusta inline groups (jogadores dentro de times) */
-.inline-group {
-    background: #2c3136 !important;
-    border: 1px solid #454d55 !important;
-    border-radius: 5px !important;
-}
-
-.inline-group h2 {
-    background: #343a40 !important;
-    color: #fff !important;
-}
-
-/* Ajusta tabelas de listagem */
-#result_list {
-    width: 100%;
-    background: #2c3136 !important;
-}
-
-#result_list thead th {
-    background: #343a40 !important;
-    color: #fff !important;
+/* Ações em massa */
+.actions {
+    background: var(--bg-light) !important;
     padding: 10px !important;
+    border-radius: 6px !important;
+    margin-bottom: 15px !important;
 }
 
-#result_list tbody tr {
-    border-bottom: 1px solid #454d55 !important;
+/* Paginação */
+.pagination {
+    margin-top: 20px !important;
 }
 
-#result_list tbody tr:hover {
-    background: #3a4148 !important;
+.pagination .page-link {
+    color: var(--primary) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.pagination .page-link:hover {
+    background: var(--bg-light) !important;
+}
+
+.pagination .active .page-link {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: white !important;
+}
+
+/* Tooltips */
+.tooltip {
+    font-size: 0.85rem !important;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .sidebar {
+        border-right: none !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
 }
