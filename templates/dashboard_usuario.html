@@ -1,0 +1,628 @@
+<!-- templates/dashboard_usuario.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}LigaPro - Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* VARIÁVEIS */
+    :root {
+        --primary: #1b5e20;
+        --primary-dark: #0d3c0d;
+        --primary-light: #2e7d32;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --gray-50: #f9fafb;
+        --gray-100: #f1f5f9;
+        --gray-200: #e2e8f0;
+        --gray-300: #cbd5e1;
+        --gray-400: #94a3b8;
+        --gray-500: #64748b;
+        --gray-600: #475569;
+        --gray-700: #334155;
+        --gray-800: #1e293b;
+        --gray-900: #0f172a;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+        --radius-sm: 0.375rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 0.75rem;
+        --radius-xl: 1rem;
+    }
+
+    /* HERO SECTION */
+    .hero-section {
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        color: white;
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 50px 50px;
+    }
+
+    .hero-content {
+        text-align: center;
+    }
+
+    .hero-content h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-content p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    /* CARDS DE ESTATÍSTICAS */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(27, 94, 32, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        font-size: 1.8rem;
+    }
+
+    .stat-content {
+        flex: 1;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--gray-500);
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--gray-900);
+        line-height: 1.2;
+    }
+
+    /* GRID PRINCIPAL */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* CARDS DE CONTEÚDO */
+    .content-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+    }
+
+    .card-header {
+        padding: 1rem 1.5rem;
+        background: var(--gray-50);
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .card-header h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--gray-800);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .card-header h3 i {
+        color: var(--primary);
+    }
+
+    .card-header a {
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .card-header a:hover {
+        text-decoration: underline;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    /* TABELA DE ARTILHEIROS */
+    .artilheiros-table {
+        width: 100%;
+    }
+
+    .artilheiros-table tr {
+        border-bottom: 1px solid var(--gray-100);
+    }
+
+    .artilheiros-table tr:last-child {
+        border-bottom: none;
+    }
+
+    .artilheiros-table td {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .artilheiro-posicao {
+        width: 30px;
+        font-weight: 700;
+        color: var(--gray-400);
+        text-align: center;
+    }
+
+    .artilheiro-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .artilheiro-foto {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: var(--gray-100);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gray-500);
+    }
+
+    .artilheiro-nome {
+        font-weight: 600;
+        color: var(--gray-900);
+    }
+
+    .artilheiro-time {
+        font-size: 0.7rem;
+        color: var(--gray-500);
+    }
+
+    .artilheiro-gols {
+        font-weight: 700;
+        color: var(--primary);
+        text-align: center;
+        width: 40px;
+    }
+
+    /* CLASSIFICAÇÃO */
+    .classificacao-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem;
+        border-bottom: 1px solid var(--gray-100);
+    }
+
+    .classificacao-item:last-child {
+        border-bottom: none;
+    }
+
+    .classificacao-posicao {
+        width: 36px;
+        height: 36px;
+        background: var(--gray-100);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: var(--gray-700);
+        margin-right: 1rem;
+    }
+
+    .classificacao-posicao.top-1 {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: white;
+    }
+
+    .classificacao-posicao.top-2 {
+        background: linear-gradient(135deg, #9ca3af, #6b7280);
+        color: white;
+    }
+
+    .classificacao-posicao.top-3 {
+        background: linear-gradient(135deg, #b45309, #92400e);
+        color: white;
+    }
+
+    .classificacao-time {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .classificacao-logo {
+        width: 32px;
+        height: 32px;
+        object-fit: contain;
+    }
+
+    .classificacao-logo-placeholder {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        font-weight: bold;
+        border-radius: 50%;
+    }
+
+    .classificacao-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 0.85rem;
+    }
+
+    .classificacao-pontos {
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .classificacao-vitorias {
+        color: var(--gray-500);
+    }
+
+    /* JOGOS */
+    .jogos-lista {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .jogo-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem;
+        background: var(--gray-50);
+        border-radius: var(--radius-md);
+        transition: all 0.2s ease;
+    }
+
+    .jogo-item:hover {
+        background: var(--gray-100);
+    }
+
+    .jogo-times {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex: 1;
+    }
+
+    .jogo-time {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .jogo-time-logo {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+    }
+
+    .jogo-placar {
+        font-weight: 700;
+        color: var(--primary);
+        min-width: 60px;
+        text-align: center;
+    }
+
+    .jogo-vs {
+        color: var(--gray-400);
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+
+    .jogo-data {
+        font-size: 0.8rem;
+        color: var(--gray-500);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .jogo-data i {
+        color: var(--primary);
+    }
+
+    /* RESPONSIVIDADE */
+    @media (max-width: 992px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .jogo-times {
+            flex-direction: column;
+            gap: 0.25rem;
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HERO SECTION -->
+<div class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <h1>Bem-vindo ao LigaPro</h1>
+            <p>Acompanhe todas as estatísticas do campeonato</p>
+        </div>
+    </div>
+</div>
+
+<!-- CARDS DE ESTATÍSTICAS -->
+<div class="container">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-futbol"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">Times</div>
+                <div class="stat-number">{{ total_times }}</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">Jogadores</div>
+                <div class="stat-number">{{ total_jogadores }}</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">Jogos</div>
+                <div class="stat-number">{{ total_jogos }}</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">Gols</div>
+                <div class="stat-number">{{ total_gols }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GRID PRINCIPAL -->
+    <div class="dashboard-grid">
+        <!-- TOP ARTILHEIROS -->
+        <div class="content-card">
+            <div class="card-header">
+                <h3>
+                    <i class="fas fa-trophy"></i>
+                    Top Artilheiros
+                </h3>
+                <a href="{% url 'artilharia' %}">Ver todos</a>
+            </div>
+            <div class="card-body">
+                {% if artilheiros %}
+                <table class="artilheiros-table">
+                    {% for item in artilheiros %}
+                    <tr>
+                        <td class="artilheiro-posicao">{{ forloop.counter }}º</td>
+                        <td>
+                            <div class="artilheiro-info">
+                                <div class="artilheiro-foto">
+                                    {% if item.jogador.foto %}
+                                        <img src="{{ item.jogador.foto.url }}" alt="{{ item.jogador.nome }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    {% else %}
+                                        <i class="fas fa-user"></i>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <div class="artilheiro-nome">{{ item.jogador.nome }}</div>
+                                    <div class="artilheiro-time">{{ item.jogador.time.nome }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="artilheiro-gols">{{ item.gols }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% else %}
+                <p style="text-align: center; color: var(--gray-500); padding: 2rem;">Nenhum gol cadastrado</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- CLASSIFICAÇÃO -->
+        <div class="content-card">
+            <div class="card-header">
+                <h3>
+                    <i class="fas fa-chart-line"></i>
+                    Classificação
+                </h3>
+                <a href="{% url 'tabela' %}">Ver tabela</a>
+            </div>
+            <div class="card-body">
+                {% if classificacao %}
+                    {% for item in classificacao %}
+                    <div class="classificacao-item">
+                        <div class="classificacao-posicao {% if forloop.counter == 1 %}top-1{% elif forloop.counter == 2 %}top-2{% elif forloop.counter == 3 %}top-3{% endif %}">
+                            {{ forloop.counter }}
+                        </div>
+                        <div class="classificacao-time">
+                            {% if item.time.logo %}
+                                <img src="{{ item.time.logo.url }}" class="classificacao-logo" alt="{{ item.time.nome }}">
+                            {% else %}
+                                <div class="classificacao-logo-placeholder">
+                                    {{ item.time.nome|slice:":1" }}
+                                </div>
+                            {% endif %}
+                            <span class="classificacao-nome">{{ item.time.nome }}</span>
+                        </div>
+                        <div class="classificacao-info">
+                            <span class="classificacao-pontos">{{ item.pontos }} pts</span>
+                            <span class="classificacao-vitorias">{{ item.vitorias }}V</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <p style="text-align: center; color: var(--gray-500); padding: 2rem;">Nenhum time cadastrado</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- PRÓXIMOS JOGOS -->
+    <div class="content-card" style="margin-bottom: 1.5rem;">
+        <div class="card-header">
+            <h3>
+                <i class="fas fa-calendar-check"></i>
+                Próximos Jogos
+            </h3>
+            <a href="{% url 'proximos_jogos' %}">Ver todos</a>
+        </div>
+        <div class="card-body">
+            {% if proximos_jogos %}
+            <div class="jogos-lista">
+                {% for jogo in proximos_jogos %}
+                <div class="jogo-item">
+                    <div class="jogo-times">
+                        <div class="jogo-time">
+                            {% if jogo.time_casa.logo %}
+                                <img src="{{ jogo.time_casa.logo.url }}" class="jogo-time-logo" alt="{{ jogo.time_casa.nome }}">
+                            {% endif %}
+                            <span>{{ jogo.time_casa.nome|truncatechars:12 }}</span>
+                        </div>
+                        <span class="jogo-vs">VS</span>
+                        <div class="jogo-time">
+                            <span>{{ jogo.time_visitante.nome|truncatechars:12 }}</span>
+                            {% if jogo.time_visitante.logo %}
+                                <img src="{{ jogo.time_visitante.logo.url }}" class="jogo-time-logo" alt="{{ jogo.time_visitante.nome }}">
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="jogo-data">
+                        <i class="far fa-calendar-alt"></i>
+                        {{ jogo.data_jogo|date:"d/m/Y" }}
+                        <i class="far fa-clock"></i>
+                        {{ jogo.data_jogo|date:"H:i" }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p style="text-align: center; color: var(--gray-500); padding: 2rem;">Nenhum jogo futuro agendado</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ÚLTIMOS RESULTADOS -->
+    <div class="content-card">
+        <div class="card-header">
+            <h3>
+                <i class="fas fa-history"></i>
+                Últimos Resultados
+            </h3>
+            <a href="{% url 'lista_jogos' %}">Ver todos</a>
+        </div>
+        <div class="card-body">
+            {% if ultimos_jogos %}
+            <div class="jogos-lista">
+                {% for jogo in ultimos_jogos %}
+                <div class="jogo-item">
+                    <div class="jogo-times">
+                        <div class="jogo-time">
+                            {% if jogo.time_casa.logo %}
+                                <img src="{{ jogo.time_casa.logo.url }}" class="jogo-time-logo" alt="{{ jogo.time_casa.nome }}">
+                            {% endif %}
+                            <span>{{ jogo.time_casa.nome|truncatechars:12 }}</span>
+                        </div>
+                        <span class="jogo-placar">{{ jogo.gols_casa }} - {{ jogo.gols_visitante }}</span>
+                        <div class="jogo-time">
+                            <span>{{ jogo.time_visitante.nome|truncatechars:12 }}</span>
+                            {% if jogo.time_visitante.logo %}
+                                <img src="{{ jogo.time_visitante.logo.url }}" class="jogo-time-logo" alt="{{ jogo.time_visitante.nome }}">
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="jogo-data">
+                        <i class="far fa-calendar-alt"></i>
+                        {{ jogo.data_jogo|date:"d/m/Y" }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p style="text-align: center; color: var(--gray-500); padding: 2rem;">Nenhum jogo realizado</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

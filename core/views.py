@@ -327,3 +327,88 @@ def artilharia(request):
     }
     
     return render(request, 'artilharia.html', context)
+
+def dashboard_usuario(request):
+    # Estatísticas gerais
+    total_times = Time.objects.count()
+    total_jogadores = Jogador.objects.count()
+    total_jogos = Jogo.objects.filter(realizado=True).count()
+    total_gols = Gol.objects.filter(contra=False).count()
+    
+    # Últimos jogos
+    ultimos_jogos = Jogo.objects.filter(realizado=True).order_by('-data_jogo')[:5]
+    
+    # Próximos jogos
+    proximos_jogos = Jogo.objects.filter(realizado=False, data_jogo__gte=timezone.now()).order_by('data_jogo')[:5]
+    
+    # Top 5 artilheiros
+    top_artilheiros = Gol.objects.filter(
+        contra=False
+    ).values('jogador').annotate(
+        total=Count('id')
+    ).order_by('-total')[:5]
+    
+    artilheiros_lista = []
+    for item in top_artilheiros:
+        jogador = Jogador.objects.select_related('time').get(id=item['jogador'])
+        artilheiros_lista.append({
+            'jogador': jogador,
+            'gols': item['total']
+        })
+    
+    # Classificação (top 5)
+    times = Time.objects.all()
+    classificacao = []
+    
+    for time in times:
+        jogos_casa = Jogo.objects.filter(time_casa=time, realizado=True)
+        jogos_visitante = Jogo.objects.filter(time_visitante=time, realizado=True)
+        
+        pontos = 0
+        vitorias = 0
+        gols_pro = 0
+        gols_contra = 0
+        
+        for jogo in jogos_casa:
+            gols_pro += jogo.gols_casa
+            gols_contra += jogo.gols_visitante
+            if jogo.gols_casa > jogo.gols_visitante:
+                vitorias += 1
+                pontos += 3
+            elif jogo.gols_casa == jogo.gols_visitante:
+                pontos += 1
+        
+        for jogo in jogos_visitante:
+            gols_pro += jogo.gols_visitante
+            gols_contra += jogo.gols_casa
+            if jogo.gols_visitante > jogo.gols_casa:
+                vitorias += 1
+                pontos += 3
+            elif jogo.gols_visitante == jogo.gols_casa:
+                pontos += 1
+        
+        saldo_gols = gols_pro - gols_contra
+        
+        classificacao.append({
+            'time': time,
+            'pontos': pontos,
+            'jogos': jogos_casa.count() + jogos_visitante.count(),
+            'vitorias': vitorias,
+            'saldo_gols': saldo_gols,
+        })
+    
+    # Ordenar por pontos
+    classificacao.sort(key=lambda x: x['pontos'], reverse=True)
+    top_5_classificacao = classificacao[:5]
+    
+    context = {
+        'total_times': total_times,
+        'total_jogadores': total_jogadores,
+        'total_jogos': total_jogos,
+        'total_gols': total_gols,
+        'ultimos_jogos': ultimos_jogos,
+        'proximos_jogos': proximos_jogos,
+        'artilheiros': artilheiros_lista,
+        'classificacao': top_5_classificacao,
+    }
+    return render(request, 'dashboard_usuario.html', context)

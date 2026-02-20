@@ -318,6 +318,13 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard_usuario' %}active{% endif %}" 
+                        href="{% url 'dashboard_usuario' %}">
+                            <i class="fas fa-home"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'lista_times' %}active{% endif %}" 
                            href="{% url 'lista_times' %}">
                             <i class="fas fa-users"></i>
