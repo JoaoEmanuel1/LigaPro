@@ -1,0 +1,82 @@
+<!-- templates/painel/cadastrar_jogo.html -->
+{% extends 'painel/base_painel.html' %}
+{% load static %}
+
+{% block title %}LigaPro - Cadastrar Jogo{% endblock %}
+
+{% block page_title %}Cadastrar Jogo{% endblock %}
+{% block page_subtitle %}Agende uma nova partida{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label">Time da Casa *</label>
+                    <select name="time_casa" class="form-control" required>
+                        <option value="">Selecione...</option>
+                        {% for time in times %}
+                        <option value="{{ time.id }}">{{ time.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label">Time Visitante *</label>
+                    <select name="time_visitante" class="form-control" required>
+                        <option value="">Selecione...</option>
+                        {% for time in times %}
+                        <option value="{{ time.id }}">{{ time.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Data e Hora do Jogo *</label>
+            <input type="datetime-local" name="data_jogo" class="form-control" required>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label class="form-label">Local do Jogo</label>
+                    <input type="text" name="local" class="form-control" placeholder="Ex: Estádio Municipal">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="form-label">Rodada</label>
+                    <input type="number" name="rodada" class="form-control" value="1" min="1">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div class="form-check">
+                <input type="checkbox" name="realizado" class="form-check-input" id="realizado">
+                <label class="form-label" for="realizado" style="margin-bottom: 0;">Jogo já foi realizado?</label>
+            </div>
+            <small style="color: var(--gray-500);">
+                Marque esta opção apenas se o jogo já aconteceu. Caso contrário, será listado como "Próximo Jogo".
+            </small>
+        </div>
+        
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i>
+                Salvar Jogo
+            </button>
+            <a href="{% url 'painel:lista_jogos' %}" class="btn btn-outline">
+                <i class="fas fa-times"></i>
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

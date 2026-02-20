@@ -120,6 +120,76 @@
         letter-spacing: 0.02em;
     }
 
+    /* ===== FILTRO DE RODADAS ===== */
+    .filtro-rodada {
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+    
+    .filtro-header {
+        padding: 0.75rem 1.25rem;
+        background: var(--gray-50);
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .filtro-header i {
+        color: var(--primary);
+    }
+    
+    .filtro-header span {
+        font-weight: 500;
+        color: var(--gray-700);
+        font-size: 0.9rem;
+    }
+    
+    .filtro-buttons {
+        padding: 1rem 1.25rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    
+    .btn-rodada {
+        padding: 0.4rem 1rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        background: var(--gray-100);
+        color: var(--gray-700);
+        border: 1px solid var(--gray-200);
+    }
+    
+    .btn-rodada:hover {
+        background: var(--gray-200);
+        transform: translateY(-2px);
+    }
+    
+    .btn-rodada.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+    
+    .btn-rodada.todas {
+        background: white;
+        border: 1px solid var(--gray-300);
+        font-weight: 600;
+    }
+    
+    .btn-rodada.todas:hover {
+        background: var(--gray-50);
+    }
+
     /* BADGE DE RODADA */
     .rodada-badge {
         background: var(--primary);
@@ -402,6 +472,10 @@
         .matches-grid {
             grid-template-columns: 1fr;
         }
+        
+        .filtro-buttons {
+            justify-content: center;
+        }
     }
 </style>
 {% endblock %}
@@ -432,7 +506,7 @@
                 <div class="stat-item">
                     <i class="fas fa-layer-group"></i>
                     <div class="stat-info">
-                        <span class="stat-value">38</span>
+                        <span class="stat-value">{{ rodadas_disponiveis|length }}</span>
                         <span class="stat-label">Rodadas</span>
                     </div>
                 </div>
@@ -440,6 +514,29 @@
         </div>
     </div>
 </div>
+
+<!-- FILTRO POR RODADA -->
+{% if rodadas_disponiveis %}
+<div class="container">
+    <div class="filtro-rodada">
+        <div class="filtro-header">
+            <i class="fas fa-filter"></i>
+            <span>Filtrar por rodada</span>
+        </div>
+        <div class="filtro-buttons">
+            <a href="{% url 'lista_jogos' %}" class="btn-rodada todas {% if not rodada_selecionada %}active{% endif %}">
+                Todas as rodadas
+            </a>
+            
+            {% for r in rodadas_disponiveis %}
+            <a href="?rodada={{ r }}" class="btn-rodada {% if rodada_selecionada == r %}active{% endif %}">
+                {{ r }}ª Rodada
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
 
 <!-- LISTA DE JOGOS -->
 <div class="container">
@@ -530,9 +627,20 @@
         <!-- ESTADO VAZIO -->
         <div class="empty-state">
             <i class="fas fa-futbol"></i>
-            <h3>Nenhum jogo cadastrado</h3>
-            <p>Os jogos aparecerão aqui assim que forem cadastrados no admin</p>
-            {% if user.is_superuser %}
+            <h3>Nenhum jogo encontrado</h3>
+            <p>
+                {% if rodada_selecionada %}
+                    Não há jogos na {{ rodada_selecionada }}ª rodada.
+                {% else %}
+                    Os jogos aparecerão aqui assim que forem cadastrados no admin.
+                {% endif %}
+            </p>
+            {% if rodada_selecionada %}
+            <a href="{% url 'lista_jogos' %}" class="btn-admin">
+                <i class="fas fa-arrow-left"></i>
+                Ver todas as rodadas
+            </a>
+            {% elif user.is_superuser %}
             <a href="/admin/core/jogo/add/" class="btn-admin">
                 <i class="fas fa-plus-circle"></i>
                 Cadastrar Primeiro Jogo

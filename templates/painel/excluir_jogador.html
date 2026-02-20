@@ -1,0 +1,51 @@
+<!-- templates/painel/excluir_jogador.html -->
+{% extends 'painel/base_painel.html' %}
+{% load static %}
+
+{% block title %}LigaPro - Excluir Jogador{% endblock %}
+
+{% block page_title %}Excluir Jogador{% endblock %}
+{% block page_subtitle %}{{ jogador.nome }}{% endblock %}
+
+{% block content %}
+<div class="form-card" style="text-align: center;">
+    <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: var(--danger); margin-bottom: 1.5rem;"></i>
+    
+    <h3 style="color: var(--gray-800); margin-bottom: 1rem;">Tem certeza que deseja excluir?</h3>
+    
+    <p style="color: var(--gray-600); margin-bottom: 2rem;">
+        O jogador <strong>{{ jogador.nome }}</strong> será permanentemente removido.<br>
+        Esta ação não pode ser desfeita.
+    </p>
+    
+    <div style="background: var(--gray-50); padding: 1.5rem; border-radius: var(--radius-lg); margin-bottom: 2rem; text-align: left; display: flex; align-items: center; gap: 1rem;">
+        <div>
+            {% if jogador.foto %}
+                <img src="{{ jogador.foto.url }}" alt="{{ jogador.nome }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 50%;">
+            {% else %}
+                <div style="width: 60px; height: 60px; background: var(--gray-200); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-user" style="font-size: 1.5rem; color: var(--gray-500);"></i>
+                </div>
+            {% endif %}
+        </div>
+        <div>
+            <p style="margin: 0;"><strong>Nome:</strong> {{ jogador.nome }}</p>
+            <p style="margin: 0;"><strong>Time:</strong> {{ jogador.time.nome }}</p>
+            <p style="margin: 0;"><strong>Posição:</strong> {{ jogador.get_posicao_display }}</p>
+            <p style="margin: 0;"><strong>Número:</strong> {{ jogador.numero|default:"-" }}</p>
+        </div>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash"></i>
+            Sim, excluir permanentemente
+        </button>
+        <a href="{% url 'painel:lista_jogadores' %}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i>
+            Não, voltar
+        </a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,423 @@
+<!-- templates/painel/jogadores.html -->
+{% extends 'painel/base_painel.html' %}
+{% load static %}
+
+{% block title %}LigaPro - Gerenciar Jogadores{% endblock %}
+
+{% block page_title %}Jogadores{% endblock %}
+{% block page_subtitle %}Gerencie todos os jogadores do campeonato{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ESTILOS PARA OS FILTROS */
+    .filters-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+    
+    .filters-header {
+        padding: 1rem 1.5rem;
+        background: var(--gray-50);
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .filters-header i {
+        color: var(--primary);
+        font-size: 1.1rem;
+    }
+    
+    .filters-header h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--gray-800);
+        flex: 1;
+    }
+    
+    .filters-body {
+        padding: 1.5rem;
+    }
+    
+    .filters-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .filter-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .filter-label i {
+        color: var(--primary);
+        font-size: 0.9rem;
+        width: 16px;
+    }
+    
+    .filter-select, .filter-input {
+        padding: 0.6rem;
+        border: 1px solid var(--gray-300);
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        background: white;
+        transition: all 0.2s ease;
+    }
+    
+    .filter-select:focus, .filter-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.1);
+    }
+    
+    .filter-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        justify-content: flex-end;
+    }
+    
+    .btn-filter {
+        padding: 0.6rem 1.2rem;
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-filter-primary {
+        background: var(--primary);
+        color: white;
+    }
+    
+    .btn-filter-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .btn-filter-outline {
+        background: transparent;
+        border: 1px solid var(--gray-300);
+        color: var(--gray-700);
+    }
+    
+    .btn-filter-outline:hover {
+        background: var(--gray-100);
+    }
+    
+    .results-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        padding: 0.5rem 1rem;
+        background: var(--gray-50);
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        color: var(--gray-600);
+    }
+    
+    .results-info i {
+        color: var(--primary);
+        margin-right: 0.5rem;
+    }
+    
+    .results-count {
+        font-weight: 600;
+        color: var(--primary);
+    }
+    
+    .clear-filters {
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .clear-filters:hover {
+        text-decoration: underline;
+    }
+    
+    /* BADGES PARA POSIÇÕES */
+    .badge-posicao {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+    }
+    
+    .badge-posicao.GOL { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+    .badge-posicao.ZAG { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
+    .badge-posicao.LAT { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+    .badge-posicao.VOL { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+    .badge-posicao.MEI { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+    .badge-posicao.ATA { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+    .badge-posicao.TEC { background: rgba(100, 116, 139, 0.1); color: var(--gray-600); }
+    
+    /* LOGO DO TIME */
+    .time-logo-mini {
+        width: 20px !important;
+        height: 20px !important;
+        object-fit: contain;
+        border-radius: 4px;
+        margin-right: 6px;
+        vertical-align: middle;
+    }
+    
+    /* FOTO DO JOGADOR */
+    .jogador-foto-mini {
+        width: 32px;
+        height: 32px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+    
+    .jogador-foto-placeholder {
+        width: 32px;
+        height: 32px;
+        background: var(--gray-100);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gray-500);
+    }
+    
+    .jogador-foto-placeholder i {
+        font-size: 1rem;
+    }
+    
+    .table td .time-info {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .table img {
+        max-width: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- CARD DE FILTROS -->
+<div class="filters-card">
+    <div class="filters-header">
+        <i class="fas fa-filter"></i>
+        <h3>Filtros</h3>
+        {% if filtros.time_id or filtros.posicao or filtros.status or filtros.busca %}
+        <a href="{% url 'painel:lista_jogadores' %}" class="clear-filters">
+            <i class="fas fa-times-circle"></i>
+            Limpar filtros
+        </a>
+        {% endif %}
+    </div>
+    
+    <div class="filters-body">
+        <form method="get" action="{% url 'painel:lista_jogadores' %}">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <span class="filter-label">
+                        <i class="fas fa-search"></i>
+                        Buscar
+                    </span>
+                    <input type="text" name="busca" class="filter-input" 
+                           placeholder="Nome do jogador..." 
+                           value="{{ filtros.busca|default:'' }}">
+                </div>
+                
+                <div class="filter-group">
+                    <span class="filter-label">
+                        <i class="fas fa-futbol"></i>
+                        Time
+                    </span>
+                    <select name="time" class="filter-select">
+                        <option value="todos" {% if not filtros.time_id or filtros.time_id == 'todos' %}selected{% endif %}>
+                            Todos os times
+                        </option>
+                        {% for time in times %}
+                        <option value="{{ time.id }}" {% if filtros.time_id == time.id|stringformat:"s" %}selected{% endif %}>
+                            {{ time.nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <span class="filter-label">
+                        <i class="fas fa-user-tag"></i>
+                        Posição
+                    </span>
+                    <select name="posicao" class="filter-select">
+                        <option value="todos" {% if not filtros.posicao or filtros.posicao == 'todos' %}selected{% endif %}>
+                            Todas as posições
+                        </option>
+                        {% for sigla, nome in posicoes %}
+                        <option value="{{ sigla }}" {% if filtros.posicao == sigla %}selected{% endif %}>
+                            {{ nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <span class="filter-label">
+                        <i class="fas fa-circle"></i>
+                        Status
+                    </span>
+                    <select name="status" class="filter-select">
+                        <option value="todos" {% if not filtros.status or filtros.status == 'todos' %}selected{% endif %}>
+                            Todos
+                        </option>
+                        <option value="ativo" {% if filtros.status == 'ativo' %}selected{% endif %}>Ativo</option>
+                        <option value="inativo" {% if filtros.status == 'inativo' %}selected{% endif %}>Inativo</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="filter-actions">
+                <button type="submit" class="btn-filter btn-filter-primary">
+                    <i class="fas fa-filter"></i>
+                    Aplicar Filtros
+                </button>
+                <a href="{% url 'painel:lista_jogadores' %}" class="btn-filter btn-filter-outline">
+                    <i class="fas fa-undo"></i>
+                    Limpar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- INFORMAÇÕES DOS RESULTADOS -->
+<div class="results-info">
+    <div>
+        <i class="fas fa-users"></i>
+        <span><strong class="results-count">{{ total_resultados }}</strong> jogador{{ total_resultados|pluralize:"es" }} encontrado{{ total_resultados|pluralize:"s" }}</span>
+    </div>
+    {% if filtros.time_id or filtros.posicao or filtros.status or filtros.busca %}
+    <div>
+        <small>Filtros ativos: 
+            {% if filtros.busca %} "{{ filtros.busca }}" {% endif %}
+            {% if filtros.time_id and filtros.time_id != 'todos' %} • Time específico {% endif %}
+            {% if filtros.posicao and filtros.posicao != 'todos' %} • Posição específica {% endif %}
+            {% if filtros.status and filtros.status != 'todos' %} • {{ filtros.status|title }} {% endif %}
+        </small>
+    </div>
+    {% endif %}
+</div>
+
+<!-- TABELA DE JOGADORES -->
+<div class="table-card">
+    <div class="table-header">
+        <h3>
+            <i class="fas fa-users"></i>
+            Lista de Jogadores
+        </h3>
+        <a href="{% url 'painel:cadastrar_jogador' %}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus-circle"></i>
+            Novo Jogador
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Foto</th>
+                    <th>Nome</th>
+                    <th>Time</th>
+                    <th>Nº</th>
+                    <th>Posição</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for jogador in jogadores %}
+                <tr>
+                    <td>
+                        {% if jogador.foto %}
+                            <img src="{{ jogador.foto.url }}" alt="{{ jogador.nome }}" class="jogador-foto-mini">
+                        {% else %}
+                            <div class="jogador-foto-placeholder">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td><strong>{{ jogador.nome }}</strong></td>
+                    <td>
+                        <div class="time-info">
+                            {% if jogador.time.logo %}
+                                <img src="{{ jogador.time.logo.url }}" class="time-logo-mini" alt="{{ jogador.time.nome }}">
+                            {% endif %}
+                            <span>{{ jogador.time.nome }}</span>
+                        </div>
+                    </td>
+                    <td>{{ jogador.numero|default:"-" }}</td>
+                    <td>
+                        <span class="badge-posicao {{ jogador.posicao }}">
+                            {{ jogador.get_posicao_display }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if jogador.ativo %}
+                            <span class="badge badge-success">Ativo</span>
+                        {% else %}
+                            <span class="badge badge-danger">Inativo</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a href="{% url 'painel:editar_jogador' jogador.id %}" class="btn btn-outline btn-sm" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'painel:excluir_jogador' jogador.id %}" class="btn btn-danger btn-sm" title="Excluir">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 3rem;">
+                        <i class="fas fa-users-slash" style="font-size: 3rem; color: var(--gray-300); margin-bottom: 1rem;"></i>
+                        <h3 style="color: var(--gray-500);">Nenhum jogador encontrado</h3>
+                        <p style="color: var(--gray-400);">Tente ajustar os filtros ou <a href="{% url 'painel:cadastrar_jogador' %}" style="color: var(--primary);">cadastrar um novo jogador</a>.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

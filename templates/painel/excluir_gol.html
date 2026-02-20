@@ -1,0 +1,53 @@
+<!-- templates/painel/excluir_gol.html -->
+{% extends 'painel/base_painel.html' %}
+{% load static %}
+
+{% block title %}LigaPro - Excluir Gol{% endblock %}
+
+{% block page_title %}Excluir Gol{% endblock %}
+{% block page_subtitle %}{{ gol.jogador.nome }}{% endblock %}
+
+{% block content %}
+<div class="form-card" style="text-align: center;">
+    <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: var(--danger); margin-bottom: 1.5rem;"></i>
+    
+    <h3 style="color: var(--gray-800); margin-bottom: 1rem;">Tem certeza que deseja excluir?</h3>
+    
+    <p style="color: var(--gray-600); margin-bottom: 2rem;">
+        Este gol será permanentemente removido.<br>
+        Esta ação não pode ser desfeita.
+    </p>
+    
+    <div style="background: var(--gray-50); padding: 1.5rem; border-radius: var(--radius-lg); margin-bottom: 2rem; text-align: left;">
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+            {% if gol.jogador.foto %}
+                <img src="{{ gol.jogador.foto.url }}" alt="{{ gol.jogador.nome }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 50%;">
+            {% else %}
+                <div style="width: 60px; height: 60px; background: var(--gray-200); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-user" style="font-size: 1.5rem; color: var(--gray-500);"></i>
+                </div>
+            {% endif %}
+            <div>
+                <p style="margin: 0; font-weight: 600;">{{ gol.jogador.nome }}</p>
+                <p style="margin: 0; color: var(--gray-600);">{{ gol.time.nome }}</p>
+            </div>
+        </div>
+        
+        <p style="margin: 0.5rem 0;"><strong>Jogo:</strong> {{ gol.jogo.time_casa.nome }} x {{ gol.jogo.time_visitante.nome }} ({{ gol.jogo.data_jogo|date:"d/m/Y" }})</p>
+        <p style="margin: 0.5rem 0;"><strong>Minuto:</strong> {{ gol.minuto }}'</p>
+        <p style="margin: 0.5rem 0;"><strong>Tipo:</strong> {% if gol.contra %}Gol Contra{% else %}{{ gol.get_tipo_display }}{% endif %}</p>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash"></i>
+            Sim, excluir permanentemente
+        </button>
+        <a href="{% url 'painel:lista_gols' %}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i>
+            Não, voltar
+        </a>
+    </form>
+</div>
+{% endblock %}

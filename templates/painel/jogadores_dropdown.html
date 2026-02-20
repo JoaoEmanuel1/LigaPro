@@ -1,0 +1,7 @@
+<!-- templates/painel/jogadores_dropdown.html -->
+<option value="">Selecione um jogador...</option>
+{% for jogador in jogadores %}
+<option value="{{ jogador.id }}">
+    #{{ jogador.numero|default:"-" }} {{ jogador.nome }} ({{ jogador.get_posicao_display }})
+</option>
+{% endfor %}

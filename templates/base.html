@@ -347,7 +347,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'artilharia' %}active{% endif %}" 
-                        href="{% url 'artilharia' %}">
+                           href="{% url 'artilharia' %}">
                             <i class="fas fa-trophy"></i>
                             Artilharia
                         </a>
@@ -359,9 +359,10 @@
                 <div class="user-section">
                     {% if user.is_authenticated %}
                         {% if user.is_superuser %}
-                        <a class="nav-link" href="{% url 'admin:index' %}" title="Admin">
+                        <!-- LINK CORRIGIDO - Agora aponta para o painel personalizado -->
+                        <a class="nav-link" href="{% url 'painel:dashboard' %}" title="Painel Administrativo">
                             <i class="fas fa-cog"></i>
-                            <span class="d-lg-none">Admin</span>
+                            <span class="d-lg-none">Painel</span>
                         </a>
                         {% endif %}
                         <div class="user-avatar d-none d-lg-flex">

@@ -1,0 +1,99 @@
+<!-- templates/painel/editar_jogador.html -->
+{% extends 'painel/base_painel.html' %}
+{% load static %}
+
+{% block title %}LigaPro - Editar Jogador{% endblock %}
+
+{% block page_title %}Editar Jogador{% endblock %}
+{% block page_subtitle %}{{ jogador.nome }}{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="form-label">Nome do Jogador *</label>
+            <input type="text" name="nome" class="form-control" value="{{ jogador.nome }}" required placeholder="Ex: João Silva">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Time *</label>
+            <select name="time" class="form-control" required>
+                <option value="">Selecione um time...</option>
+                {% for time in times %}
+                <option value="{{ time.id }}" {% if time.id == jogador.time.id %}selected{% endif %}>
+                    {{ time.nome }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label">Número da Camisa</label>
+                    <input type="number" name="numero" class="form-control" value="{{ jogador.numero|default:'' }}" placeholder="Ex: 10">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label">Posição *</label>
+                    <select name="posicao" class="form-control" required>
+                        <option value="">Selecione...</option>
+                        {% for sigla, nome in posicoes %}
+                        <option value="{{ sigla }}" {% if sigla == jogador.posicao %}selected{% endif %}>{{ nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Foto Atual</label>
+            {% if jogador.foto %}
+                <div style="margin-bottom: 1rem;">
+                    <img src="{{ jogador.foto.url }}" alt="{{ jogador.nome }}" style="max-width: 100px; max-height: 100px; border-radius: 50%; border: 1px solid var(--gray-200);">
+                </div>
+            {% endif %}
+            <input type="file" name="foto" class="form-control" accept="image/*">
+            <small style="color: var(--gray-500); display: block; margin-top: 0.25rem;">
+                Deixe em branco para manter a foto atual
+            </small>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label">Data de Nascimento</label>
+                    <input type="date" name="data_nascimento" class="form-control" value="{{ jogador.data_nascimento|date:'Y-m-d'|default:'' }}">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label">Nacionalidade</label>
+                    <input type="text" name="nacionalidade" class="form-control" value="{{ jogador.nacionalidade|default:'Brasileiro' }}">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div class="form-check">
+                <input type="checkbox" name="ativo" class="form-check-input" id="ativo" {% if jogador.ativo %}checked{% endif %}>
+                <label class="form-label" for="ativo" style="margin-bottom: 0;">Jogador ativo</label>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i>
+                Salvar Alterações
+            </button>
+            <a href="{% url 'painel:lista_jogadores' %}" class="btn btn-outline">
+                <i class="fas fa-times"></i>
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+<!-- templates/painel/detalhe_time.html -->
+{% extends 'painel/base_painel.html' %}
+{% load static %}
+
+{% block title %}LigaPro - {{ time.nome }}{% endblock %}
+
+{% block page_title %}{{ time.nome }}{% endblock %}
+{% block page_subtitle %}Detalhes do time e jogadores{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="stat-card" style="text-align: center;">
+            {% if time.logo %}
+                <img src="{{ time.logo.url }}" alt="{{ time.nome }}" style="max-width: 150px; max-height: 150px; margin-bottom: 1rem;">
+            {% else %}
+                <div style="width: 150px; height: 150px; background: var(--gray-100); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: var(--gray-500);">
+                    <i class="fas fa-futbol fa-3x"></i>
+                </div>
+            {% endif %}
+            
+            <h3 style="margin-bottom: 0.5rem;">{{ time.nome }}</h3>
+            <p style="color: var(--gray-500); margin-bottom: 1.5rem;">
+                <i class="fas fa-calendar-alt"></i>
+                Cadastrado em {{ time.data_criacao|date:"d/m/Y" }}
+            </p>
+            
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="{% url 'painel:editar_time' time.id %}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-edit"></i>
+                    Editar
+                </a>
+                <a href="{% url 'painel:cadastrar_jogador' %}?time={{ time.id }}" class="btn btn-outline btn-sm">
+                    <i class="fas fa-user-plus"></i>
+                    Adicionar Jogador
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="table-card">
+            <div class="table-header">
+                <h3>
+                    <i class="fas fa-users"></i>
+                    Jogadores do Time
+                </h3>
+                <a href="{% url 'painel:cadastrar_jogador' %}?time={{ time.id }}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus-circle"></i>
+                    Novo Jogador
+                </a>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nome</th>
+                            <th>Posição</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for jogador in jogadores %}
+                        <tr>
+                            <td><strong>{{ jogador.numero|default:"-" }}</strong></td>
+                            <td>{{ jogador.nome }}</td>
+                            <td>{{ jogador.get_posicao_display }}</td>
+                            <td>
+                                {% if jogador.ativo %}
+                                    <span class="badge badge-success">Ativo</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Inativo</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <a href="/admin/core/jogador/{{ jogador.id }}/change/" class="btn btn-outline btn-sm" title="Editar no Admin">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 2rem;">
+                                <i class="fas fa-users-slash" style="font-size: 2rem; color: var(--gray-300); margin-bottom: 0.5rem;"></i>
+                                <p style="color: var(--gray-500);">Nenhum jogador cadastrado neste time.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

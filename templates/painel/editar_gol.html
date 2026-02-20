@@ -1,0 +1,108 @@
+<!-- templates/painel/editar_gol.html -->
+{% extends 'painel/base_painel.html' %}
+{% load static %}
+
+{% block title %}LigaPro - Editar Gol{% endblock %}
+
+{% block page_title %}Editar Gol{% endblock %}
+{% block page_subtitle %}{{ gol.jogador.nome }} - {{ gol.jogo.time_casa.nome }} x {{ gol.jogo.time_visitante.nome }}{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#time').change(function() {
+            var timeId = $(this).val();
+            if (timeId) {
+                $.ajax({
+                    url: '{% url "painel:carregar_jogadores" %}',
+                    data: {
+                        'time_id': timeId
+                    },
+                    success: function(data) {
+                        $('#jogador').html(data);
+                        // Pré-selecionar o jogador atual
+                        $('#jogador').val('{{ gol.jogador.id }}');
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="form-label">Jogo *</label>
+            <select name="jogo" class="form-control" required>
+                <option value="">Selecione um jogo...</option>
+                {% for jogo in jogos %}
+                <option value="{{ jogo.id }}" {% if jogo.id == gol.jogo.id %}selected{% endif %}>
+                    {{ jogo.time_casa.nome }} x {{ jogo.time_visitante.nome }} - {{ jogo.data_jogo|date:"d/m/Y H:i" }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Time *</label>
+            <select name="time" id="time" class="form-control" required>
+                <option value="">Selecione um time...</option>
+                {% for time in times %}
+                <option value="{{ time.id }}" {% if time.id == gol.time.id %}selected{% endif %}>
+                    {{ time.nome }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Jogador *</label>
+            <select name="jogador" id="jogador" class="form-control" required>
+                <option value="{{ gol.jogador.id }}" selected>{{ gol.jogador.nome }}</option>
+            </select>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label">Minuto *</label>
+                    <input type="number" name="minuto" class="form-control" value="{{ gol.minuto }}" required min="1" max="120">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label">Tipo de Gol</label>
+                    <select name="tipo" class="form-control">
+                        {% for sigla, nome in tipos_gol %}
+                        <option value="{{ sigla }}" {% if sigla == gol.tipo %}selected{% endif %}>{{ nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div class="form-check">
+                <input type="checkbox" name="contra" class="form-check-input" id="contra" {% if gol.contra %}checked{% endif %}>
+                <label class="form-label" for="contra" style="margin-bottom: 0;">Gol contra</label>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i>
+                Salvar Alterações
+            </button>
+            <a href="{% url 'painel:lista_gols' %}" class="btn btn-outline">
+                <i class="fas fa-times"></i>
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

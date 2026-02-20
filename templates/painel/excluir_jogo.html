@@ -1,0 +1,70 @@
+<!-- templates/painel/excluir_jogo.html -->
+{% extends 'painel/base_painel.html' %}
+{% load static %}
+
+{% block title %}LigaPro - Excluir Jogo{% endblock %}
+
+{% block page_title %}Excluir Jogo{% endblock %}
+{% block page_subtitle %}{{ jogo.time_casa.nome }} x {{ jogo.time_visitante.nome }}{% endblock %}
+
+{% block content %}
+<div class="form-card" style="text-align: center;">
+    <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: var(--danger); margin-bottom: 1.5rem;"></i>
+    
+    <h3 style="color: var(--gray-800); margin-bottom: 1rem;">Tem certeza que deseja excluir?</h3>
+    
+    <p style="color: var(--gray-600); margin-bottom: 2rem;">
+        O jogo <strong>{{ jogo.time_casa.nome }} x {{ jogo.time_visitante.nome }}</strong> será permanentemente removido.<br>
+        Esta ação não pode ser desfeita.
+    </p>
+    
+    <div style="background: var(--gray-50); padding: 1.5rem; border-radius: var(--radius-lg); margin-bottom: 2rem;">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+            <div style="text-align: center;">
+                {% if jogo.time_casa.logo %}
+                    <img src="{{ jogo.time_casa.logo.url }}" alt="{{ jogo.time_casa.nome }}" style="width: 60px; height: 60px; object-fit: contain; margin-bottom: 0.5rem;">
+                {% else %}
+                    <div style="width: 60px; height: 60px; background: var(--gray-200); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem;">
+                        <i class="fas fa-futbol" style="font-size: 1.5rem; color: var(--gray-500);"></i>
+                    </div>
+                {% endif %}
+                <p style="margin: 0; font-weight: 600;">{{ jogo.time_casa.nome }}</p>
+            </div>
+            
+            <div style="font-size: 1.5rem; font-weight: bold; color: var(--gray-400);">VS</div>
+            
+            <div style="text-align: center;">
+                {% if jogo.time_visitante.logo %}
+                    <img src="{{ jogo.time_visitante.logo.url }}" alt="{{ jogo.time_visitante.nome }}" style="width: 60px; height: 60px; object-fit: contain; margin-bottom: 0.5rem;">
+                {% else %}
+                    <div style="width: 60px; height: 60px; background: var(--gray-200); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem;">
+                        <i class="fas fa-futbol" style="font-size: 1.5rem; color: var(--gray-500);"></i>
+                    </div>
+                {% endif %}
+                <p style="margin: 0; font-weight: 600;">{{ jogo.time_visitante.nome }}</p>
+            </div>
+        </div>
+        
+        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--gray-200);">
+            <p style="margin: 0;"><strong>Data:</strong> {{ jogo.data_jogo|date:"d/m/Y H:i" }}</p>
+            <p style="margin: 0;"><strong>Local:</strong> {{ jogo.local|default:"Não informado" }}</p>
+            <p style="margin: 0;"><strong>Rodada:</strong> {{ jogo.rodada }}ª</p>
+            {% if jogo.realizado %}
+                <p style="margin: 0;"><strong>Placar:</strong> {{ jogo.gols_casa }} x {{ jogo.gols_visitante }}</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash"></i>
+            Sim, excluir permanentemente
+        </button>
+        <a href="{% url 'painel:lista_jogos' %}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i>
+            Não, voltar
+        </a>
+    </form>
+</div>
+{% endblock %}

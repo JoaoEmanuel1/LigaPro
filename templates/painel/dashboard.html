@@ -1,0 +1,225 @@
+<!-- templates/painel/dashboard.html -->
+{% extends 'painel/base_painel.html' %}
+{% load static %}
+
+{% block title %}LigaPro - Painel Administrativo{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Visão geral do sistema{% endblock %}
+
+{% block content %}
+<!-- Cards de Estatísticas -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon">
+                <i class="fas fa-futbol"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Times</h3>
+                <div class="stat-number">{{ total_times }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Jogadores</h3>
+                <div class="stat-number">{{ total_jogadores }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Jogos</h3>
+                <div class="stat-number">{{ total_jogos }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Gols</h3>
+                <div class="stat-number">{{ total_gols }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Últimos Jogos e Próximos Jogos -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="table-card">
+            <div class="table-header">
+                <h3>
+                    <i class="fas fa-history"></i>
+                    Últimos Resultados
+                </h3>
+                <a href="{% url 'painel:lista_jogos' %}">Ver todos</a>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Jogo</th>
+                            <th>Placar</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for jogo in jogos_recentes %}
+                        <tr>
+                            <td>{{ jogo.time_casa.nome }} x {{ jogo.time_visitante.nome }}</td>
+                            <td><strong>{{ jogo.gols_casa }} x {{ jogo.gols_visitante }}</strong></td>
+                            <td>{{ jogo.data_jogo|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" style="text-align: center; color: var(--gray-500); padding: 2rem;">
+                                <i class="fas fa-futbol mb-2" style="font-size: 2rem;"></i><br>
+                                Nenhum jogo realizado ainda
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="table-card">
+            <div class="table-header">
+                <h3>
+                    <i class="fas fa-calendar-check"></i>
+                    Próximos Jogos
+                </h3>
+                <a href="{% url 'painel:lista_jogos' %}">Ver todos</a>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Jogo</th>
+                            <th>Data</th>
+                            <th>Local</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for jogo in proximos_jogos %}
+                        <tr>
+                            <td>{{ jogo.time_casa.nome }} x {{ jogo.time_visitante.nome }}</td>
+                            <td>{{ jogo.data_jogo|date:"d/m/Y H:i" }}</td>
+                            <td>{{ jogo.local|default:"A definir" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" style="text-align: center; color: var(--gray-500); padding: 2rem;">
+                                <i class="fas fa-calendar-times mb-2" style="font-size: 2rem;"></i><br>
+                                Nenhum jogo futuro agendado
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Artilheiros -->
+<div class="table-card" style="margin-top: 1.5rem;">
+    <div class="table-header">
+        <h3>
+            <i class="fas fa-trophy"></i>
+            Top Artilheiros do Campeonato
+        </h3>
+        <a href="{% url 'artilharia' %}" target="_blank">Ver página completa</a>
+    </div>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>Jogador</th>
+                    <th>Time</th>
+                    <th>Gols</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in artilheiros %}
+                <tr>
+                    <td><strong>{{ forloop.counter }}º</strong></td>
+                    <td>{{ item.jogador.nome }}</td>
+                    <td>
+                        <span class="badge" style="background: rgba(27, 94, 32, 0.1); color: var(--primary);">
+                            {{ item.jogador.time.nome }}
+                        </span>
+                    </td>
+                    <td><strong>{{ item.gols }}</strong></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; color: var(--gray-500); padding: 2rem;">
+                        <i class="fas fa-futbol mb-2" style="font-size: 2rem;"></i><br>
+                        Nenhum gol cadastrado ainda
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Ações Rápidas -->
+<div class="stats-grid" style="margin-top: 1.5rem; grid-template-columns: repeat(3, 1fr);">
+    <a href="{% url 'painel:cadastrar_time' %}" class="stat-card" style="text-decoration: none;">
+        <div class="stat-header">
+            <div class="stat-icon">
+                <i class="fas fa-plus-circle"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Novo Time</h3>
+                <div class="stat-number" style="font-size: 1rem;">Cadastrar</div>
+            </div>
+        </div>
+    </a>
+    
+    <a href="{% url 'painel:cadastrar_jogador' %}" class="stat-card" style="text-decoration: none;">
+        <div class="stat-header">
+            <div class="stat-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Novo Jogador</h3>
+                <div class="stat-number" style="font-size: 1rem;">Cadastrar</div>
+            </div>
+        </div>
+    </a>
+    
+    <a href="{% url 'painel:cadastrar_jogo' %}" class="stat-card" style="text-decoration: none;">
+        <div class="stat-header">
+            <div class="stat-icon">
+                <i class="fas fa-plus-square"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Novo Jogo</h3>
+                <div class="stat-number" style="font-size: 1rem;">Cadastrar</div>
+            </div>
+        </div>
+    </a>
+</div>
+{% endblock %}

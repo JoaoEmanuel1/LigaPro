@@ -1,0 +1,91 @@
+<!-- templates/painel/cadastrar_jogador.html -->
+{% extends 'painel/base_painel.html' %}
+{% load static %}
+
+{% block title %}LigaPro - Cadastrar Jogador{% endblock %}
+
+{% block page_title %}Cadastrar Jogador{% endblock %}
+{% block page_subtitle %}Adicione um novo jogador ao campeonato{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="form-label">Nome do Jogador *</label>
+            <input type="text" name="nome" class="form-control" required placeholder="Ex: João Silva">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Time *</label>
+            <select name="time" class="form-control" required>
+                <option value="">Selecione um time...</option>
+                {% for time in times %}
+                <option value="{{ time.id }}" {% if request.GET.time == time.id|stringformat:"i" %}selected{% endif %}>
+                    {{ time.nome }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label">Número da Camisa</label>
+                    <input type="number" name="numero" class="form-control" placeholder="Ex: 10">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label">Posição *</label>
+                    <select name="posicao" class="form-control" required>
+                        <option value="">Selecione...</option>
+                        {% for sigla, nome in posicoes %}
+                        <option value="{{ sigla }}">{{ nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Foto do Jogador</label>
+            <input type="file" name="foto" class="form-control" accept="image/*">
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label">Data de Nascimento</label>
+                    <input type="date" name="data_nascimento" class="form-control">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label">Nacionalidade</label>
+                    <input type="text" name="nacionalidade" class="form-control" value="Brasileiro">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div class="form-check">
+                <input type="checkbox" name="ativo" class="form-check-input" id="ativo" checked>
+                <label class="form-label" for="ativo" style="margin-bottom: 0;">Jogador ativo</label>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i>
+                Salvar Jogador
+            </button>
+            <a href="{% url 'painel:lista_jogadores' %}" class="btn btn-outline">
+                <i class="fas fa-times"></i>
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

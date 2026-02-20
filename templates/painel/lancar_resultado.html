@@ -1,0 +1,79 @@
+<!-- templates/painel/lancar_resultado.html -->
+{% extends 'painel/base_painel.html' %}
+{% load static %}
+
+{% block title %}LigaPro - Lançar Resultado{% endblock %}
+
+{% block page_title %}Lançar Resultado{% endblock %}
+{% block page_subtitle %}{{ jogo.time_casa.nome }} x {{ jogo.time_visitante.nome }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="form-card">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h3 style="margin-bottom: 0.5rem;">{{ jogo.time_casa.nome }} x {{ jogo.time_visitante.nome }}</h3>
+                <p style="color: var(--gray-500);">
+                    <i class="far fa-calendar-alt"></i> {{ jogo.data_jogo|date:"d/m/Y H:i" }}<br>
+                    {% if jogo.local %}
+                        <i class="fas fa-map-marker-alt"></i> {{ jogo.local }}
+                    {% endif %}
+                </p>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-5 text-center">
+                        <h4>{{ jogo.time_casa.nome }}</h4>
+                        {% if jogo.time_casa.logo %}
+                            <img src="{{ jogo.time_casa.logo.url }}" alt="{{ jogo.time_casa.nome }}" style="max-width: 100px; max-height: 100px; margin: 1rem 0;">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-2 text-center" style="display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 1.5rem; font-weight: bold; color: var(--gray-400);">VS</span>
+                    </div>
+                    <div class="col-md-5 text-center">
+                        <h4>{{ jogo.time_visitante.nome }}</h4>
+                        {% if jogo.time_visitante.logo %}
+                            <img src="{{ jogo.time_visitante.logo.url }}" alt="{{ jogo.time_visitante.nome }}" style="max-width: 100px; max-height: 100px; margin: 1rem 0;">
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label text-center d-block">Gols do {{ jogo.time_casa.nome }}</label>
+                            <input type="number" name="gols_casa" class="form-control text-center" value="0" min="0" style="font-size: 2rem; height: 70px;">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label text-center d-block">Gols do {{ jogo.time_visitante.nome }}</label>
+                            <input type="number" name="gols_visitante" class="form-control text-center" value="0" min="0" style="font-size: 2rem; height: 70px;">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info" style="margin-top: 1.5rem;">
+                    <i class="fas fa-info-circle"></i>
+                    Após lançar o resultado, o jogo será marcado como realizado e você poderá cadastrar os gols individualmente no admin.
+                </div>
+                
+                <div class="form-group text-center mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-check-circle"></i>
+                        Confirmar Resultado
+                    </button>
+                    <a href="{% url 'painel:lista_jogos' %}" class="btn btn-outline btn-lg">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

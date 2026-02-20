@@ -1,0 +1,427 @@
+<!-- templates/painel/gols.html -->
+{% extends 'painel/base_painel.html' %}
+{% load static %}
+
+{% block title %}LigaPro - Gerenciar Gols{% endblock %}
+
+{% block page_title %}Gols{% endblock %}
+{% block page_subtitle %}Gerencie todos os gols do campeonato{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* FILTROS */
+    .filters-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+    
+    .filters-header {
+        padding: 1rem 1.5rem;
+        background: var(--gray-50);
+        border-bottom: 1px solid var(--gray-200);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .filters-header i {
+        color: var(--primary);
+        font-size: 1.1rem;
+    }
+    
+    .filters-header h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--gray-800);
+        flex: 1;
+    }
+    
+    .filters-body {
+        padding: 1.5rem;
+    }
+    
+    .filters-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .filter-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--gray-700);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .filter-label i {
+        color: var(--primary);
+        font-size: 0.9rem;
+        width: 16px;
+    }
+    
+    .filter-select {
+        padding: 0.6rem;
+        border: 1px solid var(--gray-300);
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        background: white;
+        transition: all 0.2s ease;
+    }
+    
+    .filter-select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.1);
+    }
+    
+    .filter-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        justify-content: flex-end;
+    }
+    
+    .btn-filter {
+        padding: 0.6rem 1.2rem;
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-filter-primary {
+        background: var(--primary);
+        color: white;
+    }
+    
+    .btn-filter-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .btn-filter-outline {
+        background: transparent;
+        border: 1px solid var(--gray-300);
+        color: var(--gray-700);
+    }
+    
+    .btn-filter-outline:hover {
+        background: var(--gray-100);
+    }
+    
+    .results-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        padding: 0.5rem 1rem;
+        background: var(--gray-50);
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        color: var(--gray-600);
+    }
+    
+    .results-info i {
+        color: var(--primary);
+        margin-right: 0.5rem;
+    }
+    
+    .results-count {
+        font-weight: 600;
+        color: var(--primary);
+    }
+    
+    .clear-filters {
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .clear-filters:hover {
+        text-decoration: underline;
+    }
+    
+    /* BADGES PARA TIPO DE GOL */
+    .badge-tipo {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+    
+    .badge-normal {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success);
+    }
+    
+    .badge-penalti {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning);
+    }
+    
+    .badge-falta {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+    }
+    
+    .badge-contra {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+    }
+    
+    /* MINIATURAS */
+    .foto-mini {
+        width: 32px;
+        height: 32px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+    
+    .foto-placeholder {
+        width: 32px;
+        height: 32px;
+        background: var(--gray-100);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gray-500);
+    }
+    
+    .time-logo-mini {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+        border-radius: var(--radius-sm);
+        margin-right: 0.25rem;
+    }
+    
+    .jogador-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .jogo-info {
+        font-size: 0.85rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- CARD DE FILTROS -->
+<div class="filters-card">
+    <div class="filters-header">
+        <i class="fas fa-filter"></i>
+        <h3>Filtros</h3>
+        {% if filtros.time_id or filtros.jogador_id or filtros.jogo_id %}
+        <a href="{% url 'painel:lista_gols' %}" class="clear-filters">
+            <i class="fas fa-times-circle"></i>
+            Limpar filtros
+        </a>
+        {% endif %}
+    </div>
+    
+    <div class="filters-body">
+        <form method="get" action="{% url 'painel:lista_gols' %}">
+            <div class="filters-grid">
+                <!-- Filtro por time -->
+                <div class="filter-group">
+                    <span class="filter-label">
+                        <i class="fas fa-futbol"></i>
+                        Time
+                    </span>
+                    <select name="time" class="filter-select">
+                        <option value="todos" {% if not filtros.time_id or filtros.time_id == 'todos' %}selected{% endif %}>
+                            Todos os times
+                        </option>
+                        {% for time in times %}
+                        <option value="{{ time.id }}" {% if filtros.time_id == time.id|stringformat:"s" %}selected{% endif %}>
+                            {{ time.nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Filtro por jogador -->
+                <div class="filter-group">
+                    <span class="filter-label">
+                        <i class="fas fa-user"></i>
+                        Jogador
+                    </span>
+                    <select name="jogador" class="filter-select">
+                        <option value="todos" {% if not filtros.jogador_id or filtros.jogador_id == 'todos' %}selected{% endif %}>
+                            Todos os jogadores
+                        </option>
+                        {% for jogador in jogadores %}
+                        <option value="{{ jogador.id }}" {% if filtros.jogador_id == jogador.id|stringformat:"s" %}selected{% endif %}>
+                            {{ jogador.nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Filtro por jogo -->
+                <div class="filter-group">
+                    <span class="filter-label">
+                        <i class="fas fa-calendar-alt"></i>
+                        Jogo
+                    </span>
+                    <select name="jogo" class="filter-select">
+                        <option value="todos" {% if not filtros.jogo_id or filtros.jogo_id == 'todos' %}selected{% endif %}>
+                            Todos os jogos
+                        </option>
+                        {% for jogo in jogos_disponiveis %}
+                        <option value="{{ jogo.id }}" {% if filtros.jogo_id == jogo.id|stringformat:"s" %}selected{% endif %}>
+                            {{ jogo.time_casa.nome }} x {{ jogo.time_visitante.nome }} ({{ jogo.data_jogo|date:"d/m/Y" }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="filter-actions">
+                <button type="submit" class="btn-filter btn-filter-primary">
+                    <i class="fas fa-filter"></i>
+                    Aplicar Filtros
+                </button>
+                <a href="{% url 'painel:lista_gols' %}" class="btn-filter btn-filter-outline">
+                    <i class="fas fa-undo"></i>
+                    Limpar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- INFORMAÇÕES DOS RESULTADOS -->
+<div class="results-info">
+    <div>
+        <i class="fas fa-futbol"></i>
+        <span><strong class="results-count">{{ total_resultados }}</strong> gol{{ total_resultados|pluralize:"s" }} encontrado{{ total_resultados|pluralize:"s" }}</span>
+    </div>
+    {% if filtros.time_id or filtros.jogador_id or filtros.jogo_id %}
+    <div>
+        <small>Filtros ativos: 
+            {% if filtros.time_id and filtros.time_id != 'todos' %} • Time específico {% endif %}
+            {% if filtros.jogador_id and filtros.jogador_id != 'todos' %} • Jogador específico {% endif %}
+            {% if filtros.jogo_id and filtros.jogo_id != 'todos' %} • Jogo específico {% endif %}
+        </small>
+    </div>
+    {% endif %}
+</div>
+
+<!-- TABELA DE GOLS -->
+<div class="table-card">
+    <div class="table-header">
+        <h3>
+            <i class="fas fa-futbol"></i>
+            Lista de Gols
+        </h3>
+        <a href="{% url 'painel:cadastrar_gol' %}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus-circle"></i>
+            Novo Gol
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Jogador</th>
+                    <th>Time</th>
+                    <th>Jogo</th>
+                    <th>Minuto</th>
+                    <th>Tipo</th>
+                    <th>Data</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for gol in gols %}
+                <tr>
+                    <td>
+                        <div class="jogador-info">
+                            {% if gol.jogador.foto %}
+                                <img src="{{ gol.jogador.foto.url }}" class="foto-mini" alt="{{ gol.jogador.nome }}">
+                            {% else %}
+                                <div class="foto-placeholder">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            {% endif %}
+                            <strong>{{ gol.jogador.nome }}</strong>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.25rem;">
+                            {% if gol.time.logo %}
+                                <img src="{{ gol.time.logo.url }}" class="time-logo-mini" alt="{{ gol.time.nome }}">
+                            {% endif %}
+                            <span>{{ gol.time.nome }}</span>
+                        </div>
+                    </td>
+                    <td class="jogo-info">
+                        {{ gol.jogo.time_casa.nome }} x {{ gol.jogo.time_visitante.nome }}<br>
+                        <small style="color: var(--gray-500);">{{ gol.jogo.data_jogo|date:"d/m/Y" }}</small>
+                    </td>
+                    <td>{{ gol.minuto }}'</td>
+                    <td>
+                        <span class="badge-tipo 
+                            {% if gol.tipo == 'NORMAL' %}badge-normal
+                            {% elif gol.tipo == 'PENALTI' %}badge-penalti
+                            {% elif gol.tipo == 'FALTA' %}badge-falta
+                            {% elif gol.contra %}badge-contra
+                            {% endif %}">
+                            {% if gol.contra %}Gol Contra{% else %}{{ gol.get_tipo_display }}{% endif %}
+                        </span>
+                    </td>
+                    <td>{{ gol.data_cadastro|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        <div class="actions">
+                            <a href="{% url 'painel:editar_gol' gol.id %}" class="btn btn-outline btn-sm" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'painel:excluir_gol' gol.id %}" class="btn btn-danger btn-sm" title="Excluir">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 3rem;">
+                        <i class="fas fa-futbol" style="font-size: 3rem; color: var(--gray-300); margin-bottom: 1rem;"></i>
+                        <h3 style="color: var(--gray-500);">Nenhum gol cadastrado</h3>
+                        <p style="color: var(--gray-400);">Clique no botão "Novo Gol" para começar.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

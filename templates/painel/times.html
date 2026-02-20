@@ -1,0 +1,77 @@
+<!-- templates/painel/times.html -->
+{% extends 'painel/base_painel.html' %}
+{% load static %}
+
+{% block title %}LigaPro - Gerenciar Times{% endblock %}
+
+{% block page_title %}Times{% endblock %}
+{% block page_subtitle %}Gerencie todos os times do campeonato{% endblock %}
+
+{% block content %}
+<div class="table-card">
+    <div class="table-header">
+        <h3>
+            <i class="fas fa-futbol"></i>
+            Lista de Times
+        </h3>
+        <a href="{% url 'painel:cadastrar_time' %}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus-circle"></i>
+            Novo Time
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Logo</th>
+                    <th>Nome</th>
+                    <th>Data de Cadastro</th>
+                    <th>Jogadores</th>
+                    <th>Gols</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for time in times %}
+                <tr>
+                    <td>
+                        {% if time.logo %}
+                            <img src="{{ time.logo.url }}" alt="{{ time.nome }}" style="width: 40px; height: 40px; object-fit: contain;">
+                        {% else %}
+                            <div style="width: 40px; height: 40px; background: var(--gray-100); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gray-500);">
+                                <i class="fas fa-futbol"></i>
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td><strong>{{ time.nome }}</strong></td>
+                    <td>{{ time.data_criacao|date:"d/m/Y H:i" }}</td>
+                    <td>{{ time.num_jogadores }}</td>
+                    <td>{{ time.num_gols }}</td>
+                    <td>
+                        <div class="actions">
+                            <a href="{% url 'painel:detalhe_time' time.id %}" class="btn btn-outline btn-sm" title="Ver detalhes">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{% url 'painel:editar_time' time.id %}" class="btn btn-outline btn-sm" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'painel:excluir_time' time.id %}" class="btn btn-danger btn-sm" title="Excluir">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 3rem;">
+                        <i class="fas fa-futbol" style="font-size: 3rem; color: var(--gray-300); margin-bottom: 1rem;"></i>
+                        <h3 style="color: var(--gray-500);">Nenhum time cadastrado</h3>
+                        <p style="color: var(--gray-400);">Clique no botão "Novo Time" para começar.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

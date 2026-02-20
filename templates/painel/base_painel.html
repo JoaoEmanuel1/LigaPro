@@ -1,0 +1,778 @@
+<!-- templates/painel/base_painel.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LigaPro - Painel Administrativo{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --primary: #1b5e20;
+            --primary-dark: #0d3c0d;
+            --primary-light: #2e7d32;
+            --secondary: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --gray-50: #f9fafb;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gray-50);
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+        }
+        
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sidebar-header p {
+            margin: 0.25rem 0 0;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .sidebar-menu {
+            padding: 1rem 0;
+        }
+        
+        .menu-section {
+            padding: 0 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .menu-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+            padding: 0 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--gray-700);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            transition: all 0.2s ease;
+            margin-bottom: 0.25rem;
+        }
+        
+        .menu-item i {
+            width: 20px;
+            color: var(--gray-500);
+            font-size: 1rem;
+        }
+        
+        .menu-item:hover {
+            background: var(--gray-100);
+            color: var(--primary);
+        }
+        
+        .menu-item:hover i {
+            color: var(--primary);
+        }
+        
+        .menu-item.active {
+            background: rgba(27, 94, 32, 0.1);
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .menu-item.active i {
+            color: var(--primary);
+        }
+        
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* HEADER */
+        .top-header {
+            height: var(--header-height);
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+        
+        .menu-toggle {
+            display: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: var(--gray-700);
+        }
+        
+        .page-title h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0;
+        }
+        
+        .page-title p {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            margin: 0;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        /* CONTENT AREA */
+        .content-area {
+            padding: 2rem;
+            flex: 1;
+        }
+        
+        /* CARDS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+        
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(27, 94, 32, 0.1);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+        
+        .stat-info h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            line-height: 1.2;
+        }
+        
+        /* TABELAS */
+        .table-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        
+        .table-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--gray-50);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .table-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .table-header a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .table-header a:hover {
+            text-decoration: underline;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: 1rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            border-bottom: 1px solid var(--gray-200);
+            background: white;
+        }
+        
+        td {
+            padding: 1rem 1.5rem;
+            font-size: 0.9rem;
+            color: var(--gray-700);
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        tr:hover td {
+            background: var(--gray-50);
+        }
+        
+        /* BOTÕES - CORRIGIDO */
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white !important;  /* FORÇA TEXTO BRANCO */
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            color: white !important;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary i,
+        .btn-primary span {
+            color: white !important;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray-300);
+            color: var(--gray-700);
+        }
+        
+        .btn-outline:hover {
+            background: var(--gray-100);
+            color: var(--gray-900);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white !important;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+            color: white !important;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+        }
+        
+        .btn-lg {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+        
+        /* FORÇAR TODOS OS BOTÕES PRIMÁRIOS A TEREM TEXTO BRANCO */
+        a.btn-primary,
+        button.btn-primary,
+        .btn-primary:link,
+        .btn-primary:visited {
+            color: white !important;
+        }
+        
+        /* FORMULÁRIOS */
+        .form-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            padding: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.1);
+        }
+        
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px;
+        }
+        
+        /* CHECKBOX */
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .form-check-input {
+            width: 1.2rem;
+            height: 1.2rem;
+            cursor: pointer;
+        }
+        
+        /* ALERTAS */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+        
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+        
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            color: var(--warning);
+        }
+        
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid #3b82f6;
+            color: #3b82f6;
+        }
+        
+        /* BADGES */
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        /* ACTIONS */
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 2px dashed var(--gray-200);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--gray-300);
+            margin-bottom: 1rem;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state p {
+            color: var(--gray-500);
+            margin-bottom: 1.5rem;
+        }
+        
+        /* RESPONSIVIDADE */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .content-area {
+                padding: 1rem;
+            }
+            
+            .table-header {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-start;
+            }
+            
+            .actions {
+                flex-wrap: wrap;
+            }
+        }
+        
+        /* UTILITÁRIOS */
+        .text-center {
+            text-align: center;
+        }
+        
+        .mt-3 {
+            margin-top: 1rem;
+        }
+        
+        .mt-4 {
+            margin-top: 1.5rem;
+        }
+        
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
+        
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+        
+        .d-flex {
+            display: flex;
+        }
+        
+        .gap-2 {
+            gap: 0.5rem;
+        }
+        
+        .gap-3 {
+            gap: 1rem;
+        }
+        
+        .justify-content-between {
+            justify-content: space-between;
+        }
+        
+        .align-items-center {
+            align-items: center;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>
+                <i class="fas fa-trophy"></i>
+                LigaPro
+            </h3>
+            <p>Painel Administrativo</p>
+        </div>
+        
+        <div class="sidebar-menu">
+            <div class="menu-section">
+                <div class="menu-title">Principal</div>
+                <a href="{% url 'painel:dashboard' %}" class="menu-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+            
+            <div class="menu-section">
+                <div class="menu-title">Cadastros</div>
+                <a href="{% url 'painel:lista_times' %}" class="menu-item {% if 'times' in request.path %}active{% endif %}">
+                    <i class="fas fa-futbol"></i>
+                    <span>Times</span>
+                </a>
+                <a href="{% url 'painel:lista_jogadores' %}" class="menu-item {% if 'jogadores' in request.path %}active{% endif %}">
+                    <i class="fas fa-users"></i>
+                    <span>Jogadores</span>
+                </a>
+                <a href="{% url 'painel:lista_jogos' %}" class="menu-item {% if 'jogos' in request.path %}active{% endif %}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Jogos</span>
+                </a>
+                <a href="{% url 'painel:lista_gols' %}" class="menu-item {% if 'gols' in request.path %}active{% endif %}">
+                    <i class="fas fa-futbol"></i>
+                    <span>Gols</span>
+                </a>
+            </div>
+            
+            <div class="menu-section">
+                <div class="menu-title">Ações Rápidas</div>
+                <a href="{% url 'painel:cadastrar_time' %}" class="menu-item">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Novo Time</span>
+                </a>
+                <a href="{% url 'painel:cadastrar_jogador' %}" class="menu-item">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Novo Jogador</span>
+                </a>
+                <a href="{% url 'painel:cadastrar_jogo' %}" class="menu-item">
+                    <i class="fas fa-plus-square"></i>
+                    <span>Novo Jogo</span>
+                </a>
+            </div>
+            
+            <div class="menu-section">
+                <div class="menu-title">Sistema</div>
+                <a href="/" class="menu-item" target="_blank">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span>Ver Site</span>
+                </a>
+                <a href="{% url 'admin:index' %}" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Admin Django</span>
+                </a>
+                <a href="{% url 'logout' %}" class="menu-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sair</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- TOP HEADER -->
+        <div class="top-header">
+            <div class="menu-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </div>
+            
+            <div class="page-title">
+                <h2>{% block page_title %}Dashboard{% endblock %}</h2>
+                <p>{% block page_subtitle %}Bem-vindo ao painel{% endblock %}</p>
+            </div>
+            
+            <div class="user-info">
+                <span>{{ user.get_full_name|default:user.username }}</span>
+                <div class="user-avatar">
+                    {{ user.username|first|upper }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- CONTENT AREA -->
+        <div class="content-area">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+            
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+    
+    <!-- SCRIPTS -->
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+        
+        // Fechar sidebar ao clicar fora (mobile)
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.menu-toggle');
+            
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

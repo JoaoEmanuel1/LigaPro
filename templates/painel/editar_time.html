@@ -1,0 +1,45 @@
+<!-- templates/painel/editar_time.html -->
+{% extends 'painel/base_painel.html' %}
+{% load static %}
+
+{% block title %}LigaPro - Editar Time{% endblock %}
+
+{% block page_title %}Editar Time{% endblock %}
+{% block page_subtitle %}{{ time.nome }}{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="form-label">Nome do Time *</label>
+            <input type="text" name="nome" class="form-control" value="{{ time.nome }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Logo Atual</label>
+            {% if time.logo %}
+                <div style="margin-bottom: 1rem;">
+                    <img src="{{ time.logo.url }}" alt="{{ time.nome }}" style="max-width: 100px; max-height: 100px; border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 0.5rem;">
+                </div>
+            {% endif %}
+            <input type="file" name="logo" class="form-control" accept="image/*">
+            <small style="color: var(--gray-500); display: block; margin-top: 0.25rem;">
+                Deixe em branco para manter a logo atual
+            </small>
+        </div>
+        
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i>
+                Atualizar Time
+            </button>
+            <a href="{% url 'painel:lista_times' %}" class="btn btn-outline">
+                <i class="fas fa-times"></i>
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

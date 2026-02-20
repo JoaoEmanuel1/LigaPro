@@ -1,28 +1,13 @@
 # core/views.py
 
 from django.shortcuts import render, get_object_or_404
-from django.db.models import Q, Count, Sum
+from django.db.models import Q, Count
 from .models import Time, Jogador, Jogo, Gol
 from django.utils import timezone
 
 def lista_times(request):
     times = Time.objects.all()
     dados_times = []
-    
-    # Buscar top 5 artilheiros do campeonato
-    top_artilheiros = Gol.objects.filter(
-        contra=False
-    ).values('jogador').annotate(
-        total_gols=Count('id')
-    ).order_by('-total_gols')[:5]
-    
-    artilheiros_lista = []
-    for item in top_artilheiros:
-        jogador = Jogador.objects.select_related('time').get(id=item['jogador'])
-        artilheiros_lista.append({
-            'jogador': jogador,
-            'gols': item['total_gols']
-        })
     
     for time in times:
         jogos_casa = Jogo.objects.filter(time_casa=time, realizado=True)
@@ -80,12 +65,7 @@ def lista_times(request):
     
     dados_times.sort(key=lambda x: x['time'].nome)
     
-    context = {
-        'dados_times': dados_times,
-        'artilheiros': artilheiros_lista,  # NOVO: top artilheiros
-    }
-    
-    return render(request, 'lista_times.html', context)
+    return render(request, 'lista_times.html', {'dados_times': dados_times})
 
 
 def detalhe_time(request, time_id):
@@ -179,8 +159,38 @@ def detalhe_time(request, time_id):
 
 
 def lista_jogos(request):
-    jogos = Jogo.objects.filter(realizado=True).order_by('-data_jogo')
-    return render(request, 'lista_jogos.html', {'jogos': jogos})
+    # Obter parâmetro de rodada da URL
+    rodada = request.GET.get('rodada')
+    
+    # Query base: jogos realizados
+    jogos = Jogo.objects.filter(realizado=True)
+    
+    # Obter todas as rodadas disponíveis para o filtro
+    rodadas_disponiveis = Jogo.objects.filter(
+        realizado=True
+    ).values_list('rodada', flat=True).distinct().order_by('rodada')
+    
+    # Aplicar filtro por rodada se especificado
+    if rodada and rodada != 'todas':
+        try:
+            rodada_int = int(rodada)
+            jogos = jogos.filter(rodada=rodada_int)
+            rodada_selecionada = rodada_int
+        except ValueError:
+            rodada_selecionada = None
+    else:
+        rodada_selecionada = None
+    
+    # Ordenar por data (mais recentes primeiro)
+    jogos = jogos.order_by('-data_jogo')
+    
+    context = {
+        'jogos': jogos,
+        'rodadas_disponiveis': rodadas_disponiveis,
+        'rodada_selecionada': rodada_selecionada,
+    }
+    
+    return render(request, 'lista_jogos.html', context)
 
 
 def tabela(request):

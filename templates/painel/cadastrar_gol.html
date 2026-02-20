@@ -1,0 +1,125 @@
+<!-- templates/painel/cadastrar_gol.html -->
+{% extends 'painel/base_painel.html' %}
+{% load static %}
+
+{% block title %}LigaPro - Cadastrar Gol{% endblock %}
+
+{% block page_title %}Cadastrar Gol{% endblock %}
+{% block page_subtitle %}Registre um gol no campeonato{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Passando variáveis do Django para JavaScript
+    var timeSelecionado = "{{ time_selecionado|default:'' }}";
+    
+    $(document).ready(function() {
+        // Quando o time for selecionado, carregar os jogadores
+        $('#time').change(function() {
+            var timeId = $(this).val();
+            if (timeId) {
+                $.ajax({
+                    url: '{% url "painel:carregar_jogadores" %}',
+                    data: {
+                        'time_id': timeId
+                    },
+                    success: function(data) {
+                        $('#jogador').html(data);
+                    }
+                });
+            } else {
+                $('#jogador').html('<option value="">Selecione um jogador</option>');
+            }
+        });
+        
+        // Se já houver time selecionado, carregar jogadores
+        if (timeSelecionado) {
+            $('#time').trigger('change');
+        }
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="form-label">Jogo *</label>
+            <select name="jogo" class="form-control" required>
+                <option value="">Selecione um jogo...</option>
+                {% for jogo in jogos %}
+                <option value="{{ jogo.id }}" {% if jogo_selecionado == jogo.id|stringformat:"s" %}selected{% endif %}>
+                    {{ jogo.time_casa.nome }} x {{ jogo.time_visitante.nome }} - {{ jogo.data_jogo|date:"d/m/Y H:i" }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Time *</label>
+            <select name="time" id="time" class="form-control" required>
+                <option value="">Selecione um time...</option>
+                {% for time in times %}
+                <option value="{{ time.id }}" {% if time_selecionado == time.id|stringformat:"s" %}selected{% endif %}>
+                    {{ time.nome }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Jogador *</label>
+            <select name="jogador" id="jogador" class="form-control" required>
+                <option value="">Selecione um time primeiro...</option>
+                {% if time_selecionado %}
+                    {% for jogador in jogadores %}
+                    <option value="{{ jogador.id }}" {% if jogador_selecionado == jogador.id|stringformat:"s" %}selected{% endif %}>
+                        #{{ jogador.numero|default:"-" }} {{ jogador.nome }} ({{ jogador.get_posicao_display }})
+                    </option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label">Minuto *</label>
+                    <input type="number" name="minuto" class="form-control" required min="1" max="120" placeholder="Ex: 23">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label">Tipo de Gol</label>
+                    <select name="tipo" class="form-control">
+                        {% for sigla, nome in tipos_gol %}
+                        <option value="{{ sigla }}" {% if sigla == 'NORMAL' %}selected{% endif %}>{{ nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div class="form-check">
+                <input type="checkbox" name="contra" class="form-check-input" id="contra">
+                <label class="form-label" for="contra" style="margin-bottom: 0;">Gol contra</label>
+            </div>
+            <small style="color: var(--gray-500);">Marque esta opção se for gol contra</small>
+        </div>
+        
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i>
+                Salvar Gol
+            </button>
+            <a href="{% url 'painel:lista_gols' %}" class="btn btn-outline">
+                <i class="fas fa-times"></i>
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

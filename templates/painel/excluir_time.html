@@ -1,0 +1,42 @@
+<!-- templates/painel/excluir_time.html -->
+{% extends 'painel/base_painel.html' %}
+{% load static %}
+
+{% block title %}LigaPro - Excluir Time{% endblock %}
+
+{% block page_title %}Excluir Time{% endblock %}
+{% block page_subtitle %}{{ time.nome }}{% endblock %}
+
+{% block content %}
+<div class="form-card" style="text-align: center;">
+    <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: var(--danger); margin-bottom: 1.5rem;"></i>
+    
+    <h3 style="color: var(--gray-800); margin-bottom: 1rem;">Tem certeza que deseja excluir?</h3>
+    
+    <p style="color: var(--gray-600); margin-bottom: 2rem;">
+        O time <strong>{{ time.nome }}</strong> será permanentemente removido.<br>
+        Esta ação não pode ser desfeita.
+    </p>
+    
+    <div style="background: var(--gray-50); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 2rem; text-align: left;">
+        <p><strong>Informações do time:</strong></p>
+        <ul style="color: var(--gray-600);">
+            <li>Nome: {{ time.nome }}</li>
+            <li>Data de cadastro: {{ time.data_criacao|date:"d/m/Y" }}</li>
+            <li>Jogadores vinculados: {{ time.jogadores.count }}</li>
+        </ul>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash"></i>
+            Sim, excluir permanentemente
+        </button>
+        <a href="{% url 'painel:lista_times' %}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i>
+            Não, voltar
+        </a>
+    </form>
+</div>
+{% endblock %}
