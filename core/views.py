@@ -1,20 +1,33 @@
 # core/views.py
 
 from django.shortcuts import render, get_object_or_404
-from django.db.models import Q
-from .models import Time, Jogo
+from django.db.models import Q, Count, Sum
+from .models import Time, Jogador, Jogo, Gol
 from django.utils import timezone
 
 def lista_times(request):
     times = Time.objects.all()
     dados_times = []
     
+    # Buscar top 5 artilheiros do campeonato
+    top_artilheiros = Gol.objects.filter(
+        contra=False
+    ).values('jogador').annotate(
+        total_gols=Count('id')
+    ).order_by('-total_gols')[:5]
+    
+    artilheiros_lista = []
+    for item in top_artilheiros:
+        jogador = Jogador.objects.select_related('time').get(id=item['jogador'])
+        artilheiros_lista.append({
+            'jogador': jogador,
+            'gols': item['total_gols']
+        })
+    
     for time in times:
-        # Buscar todos os jogos do time (apenas realizados)
         jogos_casa = Jogo.objects.filter(time_casa=time, realizado=True)
         jogos_visitante = Jogo.objects.filter(time_visitante=time, realizado=True)
         
-        # Inicializar contadores
         pontos = 0
         jogos_disputados = 0
         vitorias = 0
@@ -23,7 +36,6 @@ def lista_times(request):
         gols_pro = 0
         gols_contra = 0
         
-        # Jogos como casa
         for jogo in jogos_casa:
             gols_pro += jogo.gols_casa
             gols_contra += jogo.gols_visitante
@@ -38,7 +50,6 @@ def lista_times(request):
             else:
                 derrotas += 1
         
-        # Jogos como visitante
         for jogo in jogos_visitante:
             gols_pro += jogo.gols_visitante
             gols_contra += jogo.gols_casa
@@ -67,16 +78,19 @@ def lista_times(request):
             'saldo_gols': saldo_gols,
         })
     
-    # Ordenar por ordem alfabética
     dados_times.sort(key=lambda x: x['time'].nome)
     
-    return render(request, 'lista_times.html', {'dados_times': dados_times})
+    context = {
+        'dados_times': dados_times,
+        'artilheiros': artilheiros_lista,  # NOVO: top artilheiros
+    }
+    
+    return render(request, 'lista_times.html', context)
 
 
 def detalhe_time(request, time_id):
     time = get_object_or_404(Time, id=time_id)
     
-    # Busca todos os jogos deste time
     jogos = Jogo.objects.filter(
         Q(time_casa=time) | Q(time_visitante=time)
     ).order_by('-data_jogo')
@@ -84,7 +98,31 @@ def detalhe_time(request, time_id):
     jogos_realizados = jogos.filter(realizado=True)
     jogos_futuros = jogos.filter(realizado=False, data_jogo__gte=timezone.now())
     
-    # Calcula estatísticas do time
+    jogadores = time.jogadores.filter(ativo=True).order_by('posicao', 'numero')
+    
+    goleiros = jogadores.filter(posicao='GOL')
+    zagueiros = jogadores.filter(posicao='ZAG')
+    laterais = jogadores.filter(posicao='LAT')
+    volantes = jogadores.filter(posicao='VOL')
+    meias = jogadores.filter(posicao='MEI')
+    atacantes = jogadores.filter(posicao='ATA')
+    tecnicos = jogadores.filter(posicao='TEC')
+    
+    artilheiros_time = Gol.objects.filter(
+        time=time,
+        contra=False
+    ).values('jogador').annotate(
+        total_gols=Count('id')
+    ).order_by('-total_gols')[:5]
+    
+    artilheiros_lista = []
+    for item in artilheiros_time:
+        jogador = Jogador.objects.get(id=item['jogador'])
+        artilheiros_lista.append({
+            'jogador': jogador,
+            'gols': item['total_gols']
+        })
+    
     estatisticas = {
         'jogos': jogos_realizados.count(),
         'vitorias': 0,
@@ -104,7 +142,7 @@ def detalhe_time(request, time_id):
                 estatisticas['empates'] += 1
             else:
                 estatisticas['derrotas'] += 1
-        else:  # time é visitante
+        else:
             estatisticas['gols_pro'] += jogo.gols_visitante
             estatisticas['gols_contra'] += jogo.gols_casa
             if jogo.gols_visitante > jogo.gols_casa:
@@ -127,14 +165,21 @@ def detalhe_time(request, time_id):
         'jogos_realizados': jogos_realizados[:5],
         'jogos_futuros': jogos_futuros[:5],
         'estatisticas': estatisticas,
+        'goleiros': goleiros,
+        'zagueiros': zagueiros,
+        'laterais': laterais,
+        'volantes': volantes,
+        'meias': meias,
+        'atacantes': atacantes,
+        'tecnicos': tecnicos,
+        'artilheiros': artilheiros_lista,
     }
     
     return render(request, 'detalhe_time.html', context)
 
 
 def lista_jogos(request):
-    # Busca jogos realizados e ordena por rodada
-    jogos = Jogo.objects.filter(realizado=True).order_by('rodada', '-data_jogo')
+    jogos = Jogo.objects.filter(realizado=True).order_by('-data_jogo')
     return render(request, 'lista_jogos.html', {'jogos': jogos})
 
 
@@ -143,11 +188,9 @@ def tabela(request):
     dados_times = []
     
     for time in times:
-        # Buscar todos os jogos do time (apenas realizados)
         jogos_casa = Jogo.objects.filter(time_casa=time, realizado=True)
         jogos_visitante = Jogo.objects.filter(time_visitante=time, realizado=True)
         
-        # Inicializar contadores
         pontos = 0
         jogos_disputados = 0
         vitorias = 0
@@ -156,7 +199,6 @@ def tabela(request):
         gols_pro = 0
         gols_contra = 0
         
-        # Jogos como casa
         for jogo in jogos_casa:
             gols_pro += jogo.gols_casa
             gols_contra += jogo.gols_visitante
@@ -171,7 +213,6 @@ def tabela(request):
             else:
                 derrotas += 1
         
-        # Jogos como visitante
         for jogo in jogos_visitante:
             gols_pro += jogo.gols_visitante
             gols_contra += jogo.gols_casa
@@ -200,7 +241,6 @@ def tabela(request):
             'saldo_gols': saldo_gols,
         })
     
-    # Ordenar por pontos, depois vitórias, depois saldo, depois gols pro
     from operator import itemgetter
     dados_times.sort(key=itemgetter('pontos', 'vitorias', 'saldo_gols', 'gols_pro'), reverse=True)
     
@@ -208,22 +248,18 @@ def tabela(request):
 
 
 def proximos_jogos(request):
-    # Buscar rodada da URL (se fornecida)
     rodada = request.GET.get('rodada')
     
-    # Query base: jogos futuros não realizados
     jogos_base = Jogo.objects.filter(
         realizado=False,
         data_jogo__gte=timezone.now()
     )
     
-    # Obter todas as rodadas disponíveis para o filtro
     todas_rodadas = Jogo.objects.filter(
         realizado=False,
         data_jogo__gte=timezone.now()
     ).values_list('rodada', flat=True).distinct().order_by('rodada')
     
-    # Aplicar filtro por rodada se especificado
     if rodada:
         try:
             rodada_int = int(rodada)
@@ -243,3 +279,41 @@ def proximos_jogos(request):
     }
     
     return render(request, 'proximos_jogos.html', context)
+
+
+def artilharia(request):
+    artilheiros = Gol.objects.filter(
+        contra=False
+    ).values('jogador').annotate(
+        total_gols=Count('id')
+    ).order_by('-total_gols')
+    
+    ranking = []
+    for item in artilheiros:
+        jogador = Jogador.objects.select_related('time').get(id=item['jogador'])
+        ranking.append({
+            'jogador': jogador,
+            'gols': item['total_gols']
+        })
+    
+    times_gols = Gol.objects.filter(
+        contra=False
+    ).values('time').annotate(
+        total_gols=Count('id')
+    ).order_by('-total_gols')
+    
+    times_ranking = []
+    for item in times_gols:
+        time = Time.objects.get(id=item['time'])
+        times_ranking.append({
+            'time': time,
+            'gols': item['total_gols']
+        })
+    
+    context = {
+        'ranking': ranking,
+        'times_ranking': times_ranking,
+        'total_gols': Gol.objects.filter(contra=False).count(),
+    }
+    
+    return render(request, 'artilharia.html', context)

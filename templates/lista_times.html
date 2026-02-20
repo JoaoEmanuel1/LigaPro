@@ -2,7 +2,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}PlacarFC - Times do Campeonato{% endblock %}
+{% block title %}LigaPro - Times do Campeonato{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -15,8 +15,6 @@
         --success: #10b981;
         --danger: #ef4444;
         --warning: #f59e0b;
-        --dark: #0f172a;
-        --light: #f8fafc;
         --gray-50: #f9fafb;
         --gray-100: #f1f5f9;
         --gray-200: #e2e8f0;
@@ -43,10 +41,6 @@
 
     .text-danger {
         color: var(--danger) !important;
-    }
-
-    .text-warning {
-        color: var(--warning) !important;
     }
 
     /* HEADER COMPACTO DA PÁGINA */
@@ -130,6 +124,129 @@
         color: var(--gray-500);
         text-transform: uppercase;
         letter-spacing: 0.02em;
+    }
+
+    /* ===== SEÇÃO DE ARTILHEIROS ===== */
+    .artilheiros-section {
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .artilheiros-header {
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        color: white;
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .artilheiros-header i {
+        font-size: 1.5rem;
+    }
+
+    .artilheiros-header h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0;
+        flex: 1;
+    }
+
+    .artilheiros-header a {
+        color: white;
+        text-decoration: none;
+        font-size: 0.9rem;
+        opacity: 0.9;
+        transition: opacity 0.2s ease;
+    }
+
+    .artilheiros-header a:hover {
+        opacity: 1;
+        text-decoration: underline;
+    }
+
+    .artilheiros-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0;
+        padding: 1rem;
+    }
+
+    .artilheiro-card {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        border-right: 1px solid var(--gray-200);
+        transition: all 0.2s ease;
+    }
+
+    .artilheiro-card:last-child {
+        border-right: none;
+    }
+
+    .artilheiro-card:hover {
+        background: var(--gray-50);
+        transform: translateY(-2px);
+    }
+
+    .artilheiro-posicao {
+        width: 32px;
+        height: 32px;
+        background: var(--gray-100);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: var(--primary);
+        flex-shrink: 0;
+    }
+
+    .artilheiro-posicao.top-1 {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        color: white;
+    }
+
+    .artilheiro-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .artilheiro-nome {
+        font-weight: 600;
+        color: var(--gray-900);
+        font-size: 0.9rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .artilheiro-time {
+        font-size: 0.7rem;
+        color: var(--gray-500);
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .artilheiro-gols {
+        background: var(--primary);
+        color: white;
+        font-weight: 700;
+        font-size: 0.9rem;
+        min-width: 32px;
+        height: 32px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        padding: 0 0.5rem;
     }
 
     /* GRID DE TIMES */
@@ -366,6 +483,15 @@
 
     /* RESPONSIVIDADE */
     @media (max-width: 768px) {
+        .artilheiros-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .artilheiro-card {
+            border-right: none;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
         .header-content {
             flex-direction: column;
             align-items: flex-start;
@@ -387,6 +513,10 @@
     }
 
     @media (max-width: 480px) {
+        .artilheiros-grid {
+            grid-template-columns: 1fr;
+        }
+        
         .header-stats {
             flex-direction: column;
             gap: 0.75rem;
@@ -431,16 +561,51 @@
                     </div>
                 </div>
                 <div class="stat-item">
-                    <i class="fas fa-chart-line"></i>
+                    <i class="fas fa-trophy"></i>
                     <div class="stat-info">
-                        <span class="stat-value">38</span>
-                        <span class="stat-label">Rodadas</span>
+                        <span class="stat-value">{{ artilheiros|length }}</span>
+                        <span class="stat-label">Artilheiros</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- SEÇÃO DE ARTILHEIROS -->
+{% if artilheiros %}
+<div class="container">
+    <div class="artilheiros-section">
+        <div class="artilheiros-header">
+            <i class="fas fa-trophy"></i>
+            <h2>Top Artilheiros do Campeonato</h2>
+            <a href="{% url 'artilharia' %}">Ver todos &rarr;</a>
+        </div>
+        
+        <div class="artilheiros-grid">
+            {% for item in artilheiros %}
+            <div class="artilheiro-card">
+                <div class="artilheiro-posicao {% if forloop.counter == 1 %}top-1{% endif %}">
+                    {{ forloop.counter }}º
+                </div>
+                
+                <div class="artilheiro-info">
+                    <div class="artilheiro-nome">{{ item.jogador.nome }}</div>
+                    <div class="artilheiro-time">
+                        <i class="fas fa-shield-alt"></i>
+                        {{ item.jogador.time.nome|truncatechars:15 }}
+                    </div>
+                </div>
+                
+                <div class="artilheiro-gols">
+                    {{ item.gols }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
 
 <!-- LISTA DE TIMES EM CARDS -->
 <div class="container">

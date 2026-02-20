@@ -345,6 +345,13 @@
                             Classificação
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'artilharia' %}active{% endif %}" 
+                        href="{% url 'artilharia' %}">
+                            <i class="fas fa-trophy"></i>
+                            Artilharia
+                        </a>
+                    </li>
                 </ul>
                 
                 <span class="nav-divider d-none d-lg-block"></span>

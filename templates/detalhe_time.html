@@ -540,6 +540,149 @@
         box-shadow: var(--shadow-md);
     }
 
+    /* ========== ESTILOS PARA JOGADORES ========== */
+    .elenco-section {
+        margin-top: 3rem;
+        margin-bottom: 2rem;
+    }
+    
+    .posicao-titulo {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--gray-800);
+        margin: 2rem 0 1rem 0;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--gray-200);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .posicao-titulo i {
+        color: var(--primary);
+    }
+    
+    .jogadores-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+    
+    .jogador-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.2s ease;
+    }
+    
+    .jogador-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--primary);
+    }
+    
+    .jogador-foto {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--gray-100);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+    
+    .jogador-foto img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .jogador-info {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .jogador-nome {
+        font-weight: 600;
+        color: var(--gray-900);
+        font-size: 1rem;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .jogador-detalhes {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        color: var(--gray-500);
+        margin-top: 0.2rem;
+    }
+    
+    .jogador-camisa {
+        background: var(--gray-100);
+        padding: 0.1rem 0.4rem;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        color: var(--primary);
+    }
+    
+    .jogador-posicao {
+        color: var(--gray-500);
+    }
+    
+    .empty-jogadores {
+        text-align: center;
+        padding: 3rem;
+        background: var(--gray-50);
+        border-radius: var(--radius-lg);
+        border: 2px dashed var(--gray-200);
+        margin: 2rem 0;
+    }
+    
+    .empty-jogadores i {
+        font-size: 3rem;
+        color: var(--gray-300);
+        margin-bottom: 1rem;
+    }
+    
+    .empty-jogadores p {
+        color: var(--gray-500);
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .btn-admin {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.2rem;
+        background: var(--primary);
+        color: white;
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-admin:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    /* ========== FIM ESTILOS JOGADORES ========== */
+
     /* RESPONSIVIDADE */
     @media (max-width: 1200px) {
         .stats-grid {
@@ -583,6 +726,10 @@
         .legenda-cores {
             width: 100%;
             justify-content: space-between;
+        }
+        
+        .jogadores-grid {
+            grid-template-columns: 1fr;
         }
     }
 
@@ -879,6 +1026,237 @@
         </div>
         {% endfor %}
     </div>
+
+    <!-- ========== SEÇÃO DE JOGADORES ========== -->
+    <div class="elenco-section">
+        <h3 class="section-title">
+            <i class="fas fa-users"></i>
+            Elenco
+        </h3>
+
+        {% if goleiros or zagueiros or laterais or volantes or meias or atacantes or tecnicos %}
+            
+            <!-- Goleiros -->
+            {% if goleiros %}
+            <div class="posicao-titulo">
+                <i class="fas fa-gloves"></i>
+                Goleiros
+            </div>
+            <div class="jogadores-grid">
+                {% for jogador in goleiros %}
+                <div class="jogador-card">
+                    <div class="jogador-foto">
+                        {% if jogador.foto %}
+                            <img src="{{ jogador.foto.url }}" alt="{{ jogador.nome }}">
+                        {% else %}
+                            <i class="fas fa-user"></i>
+                        {% endif %}
+                    </div>
+                    <div class="jogador-info">
+                        <div class="jogador-nome">{{ jogador.nome }}</div>
+                        <div class="jogador-detalhes">
+                            {% if jogador.numero %}
+                            <span class="jogador-camisa">#{{ jogador.numero }}</span>
+                            {% endif %}
+                            <span class="jogador-posicao">{{ jogador.get_posicao_display }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Zagueiros -->
+            {% if zagueiros %}
+            <div class="posicao-titulo">
+                <i class="fas fa-shield-alt"></i>
+                Zagueiros
+            </div>
+            <div class="jogadores-grid">
+                {% for jogador in zagueiros %}
+                <div class="jogador-card">
+                    <div class="jogador-foto">
+                        {% if jogador.foto %}
+                            <img src="{{ jogador.foto.url }}" alt="{{ jogador.nome }}">
+                        {% else %}
+                            <i class="fas fa-user"></i>
+                        {% endif %}
+                    </div>
+                    <div class="jogador-info">
+                        <div class="jogador-nome">{{ jogador.nome }}</div>
+                        <div class="jogador-detalhes">
+                            {% if jogador.numero %}
+                            <span class="jogador-camisa">#{{ jogador.numero }}</span>
+                            {% endif %}
+                            <span class="jogador-posicao">{{ jogador.get_posicao_display }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Laterais -->
+            {% if laterais %}
+            <div class="posicao-titulo">
+                <i class="fas fa-running"></i>
+                Laterais
+            </div>
+            <div class="jogadores-grid">
+                {% for jogador in laterais %}
+                <div class="jogador-card">
+                    <div class="jogador-foto">
+                        {% if jogador.foto %}
+                            <img src="{{ jogador.foto.url }}" alt="{{ jogador.nome }}">
+                        {% else %}
+                            <i class="fas fa-user"></i>
+                        {% endif %}
+                    </div>
+                    <div class="jogador-info">
+                        <div class="jogador-nome">{{ jogador.nome }}</div>
+                        <div class="jogador-detalhes">
+                            {% if jogador.numero %}
+                            <span class="jogador-camisa">#{{ jogador.numero }}</span>
+                            {% endif %}
+                            <span class="jogador-posicao">{{ jogador.get_posicao_display }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Volantes -->
+            {% if volantes %}
+            <div class="posicao-titulo">
+                <i class="fas fa-shield"></i>
+                Volantes
+            </div>
+            <div class="jogadores-grid">
+                {% for jogador in volantes %}
+                <div class="jogador-card">
+                    <div class="jogador-foto">
+                        {% if jogador.foto %}
+                            <img src="{{ jogador.foto.url }}" alt="{{ jogador.nome }}">
+                        {% else %}
+                            <i class="fas fa-user"></i>
+                        {% endif %}
+                    </div>
+                    <div class="jogador-info">
+                        <div class="jogador-nome">{{ jogador.nome }}</div>
+                        <div class="jogador-detalhes">
+                            {% if jogador.numero %}
+                            <span class="jogador-camisa">#{{ jogador.numero }}</span>
+                            {% endif %}
+                            <span class="jogador-posicao">{{ jogador.get_posicao_display }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Meias -->
+            {% if meias %}
+            <div class="posicao-titulo">
+                <i class="fas fa-brain"></i>
+                Meio-campistas
+            </div>
+            <div class="jogadores-grid">
+                {% for jogador in meias %}
+                <div class="jogador-card">
+                    <div class="jogador-foto">
+                        {% if jogador.foto %}
+                            <img src="{{ jogador.foto.url }}" alt="{{ jogador.nome }}">
+                        {% else %}
+                            <i class="fas fa-user"></i>
+                        {% endif %}
+                    </div>
+                    <div class="jogador-info">
+                        <div class="jogador-nome">{{ jogador.nome }}</div>
+                        <div class="jogador-detalhes">
+                            {% if jogador.numero %}
+                            <span class="jogador-camisa">#{{ jogador.numero }}</span>
+                            {% endif %}
+                            <span class="jogador-posicao">{{ jogador.get_posicao_display }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Atacantes -->
+            {% if atacantes %}
+            <div class="posicao-titulo">
+                <i class="fas fa-bolt"></i>
+                Atacantes
+            </div>
+            <div class="jogadores-grid">
+                {% for jogador in atacantes %}
+                <div class="jogador-card">
+                    <div class="jogador-foto">
+                        {% if jogador.foto %}
+                            <img src="{{ jogador.foto.url }}" alt="{{ jogador.nome }}">
+                        {% else %}
+                            <i class="fas fa-user"></i>
+                        {% endif %}
+                    </div>
+                    <div class="jogador-info">
+                        <div class="jogador-nome">{{ jogador.nome }}</div>
+                        <div class="jogador-detalhes">
+                            {% if jogador.numero %}
+                            <span class="jogador-camisa">#{{ jogador.numero }}</span>
+                            {% endif %}
+                            <span class="jogador-posicao">{{ jogador.get_posicao_display }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Técnicos -->
+            {% if tecnicos %}
+            <div class="posicao-titulo">
+                <i class="fas fa-clipboard-list"></i>
+                Comissão Técnica
+            </div>
+            <div class="jogadores-grid">
+                {% for jogador in tecnicos %}
+                <div class="jogador-card">
+                    <div class="jogador-foto">
+                        {% if jogador.foto %}
+                            <img src="{{ jogador.foto.url }}" alt="{{ jogador.nome }}">
+                        {% else %}
+                            <i class="fas fa-user-tie"></i>
+                        {% endif %}
+                    </div>
+                    <div class="jogador-info">
+                        <div class="jogador-nome">{{ jogador.nome }}</div>
+                        <div class="jogador-detalhes">
+                            <span class="jogador-posicao">{{ jogador.get_posicao_display }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+        {% else %}
+        <div class="empty-jogadores">
+            <i class="fas fa-users-slash"></i>
+            <p>Nenhum jogador cadastrado para este time ainda.</p>
+            {% if user.is_superuser %}
+            <a href="/admin/core/jogador/add/?time={{ time.id }}" class="btn-admin">
+                <i class="fas fa-plus-circle"></i>
+                Adicionar Jogador
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    <!-- ========== FIM SEÇÃO JOGADORES ========== -->
 
     <!-- BOTÃO VOLTAR -->
     <div class="back-button-container">
