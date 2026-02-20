@@ -1,0 +1,610 @@
+/* ========================================
+   MOBILE-FIRST - LIGAPRO
+   Adaptação para celulares com Bootstrap
+   ======================================== */
+
+/* VARIÁVEIS GLOBAIS */
+:root {
+    --primary: #1b5e20;
+    --primary-dark: #0d3c0d;
+    --primary-light: #2e7d32;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --gray-50: #f9fafb;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+}
+
+/* ========================================
+   BASE MOBILE-FIRST (0 - 576px)
+   ======================================== */
+html {
+    font-size: 14px; /* Base menor para mobile */
+}
+
+body {
+    overflow-x: hidden;
+    background: var(--gray-50);
+}
+
+.container {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+/* ========================================
+   NAVBAR - Menu Hamburguer (já funciona)
+   ======================================== */
+.navbar-brand {
+    font-size: 1.2rem;
+}
+
+.navbar-brand .logo-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.navbar-brand .logo-text-main {
+    font-size: 1.2rem;
+}
+
+.navbar-brand .logo-text-sub {
+    display: none; /* Esconde subtítulo no mobile */
+}
+
+.navbar-toggler {
+    padding: 0.4rem 0.6rem;
+    border: none;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+/* Itens do menu em mobile */
+.navbar-nav .nav-link {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navbar-nav .nav-link:last-child {
+    border-bottom: none;
+}
+
+/* ========================================
+   HEADERS DAS PÁGINAS
+   ======================================== */
+.page-header {
+    padding: 0.75rem 0;
+    margin-bottom: 1rem;
+}
+
+.header-content {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 0.75rem;
+}
+
+.header-title {
+    width: 100%;
+}
+
+.header-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+}
+
+.header-text h1 {
+    font-size: 1.3rem;
+}
+
+.header-text p {
+    font-size: 0.8rem;
+}
+
+.header-stats {
+    width: 100%;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+}
+
+.stat-item {
+    gap: 0.3rem;
+}
+
+.stat-item i {
+    font-size: 0.9rem;
+}
+
+.stat-value {
+    font-size: 0.85rem;
+}
+
+.stat-label {
+    font-size: 0.6rem;
+}
+
+/* ========================================
+   FILTROS (Botões com rolagem horizontal)
+   ======================================== */
+.filtro-rodada,
+.filtros-card,
+.rounds-nav {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    scrollbar-width: none; /* Firefox */
+}
+
+.filtro-rodada::-webkit-scrollbar,
+.filtros-card::-webkit-scrollbar,
+.rounds-nav::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+.filtro-buttons,
+.filter-actions,
+.rounds-nav {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+}
+
+.btn-rodada,
+.round-btn,
+.btn-filter {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* ========================================
+   CARDS DE TIMES
+   ======================================== */
+.teams-grid {
+    grid-template-columns: 1fr !important; /* Um card por linha */
+    gap: 1rem;
+}
+
+.team-logo-wrapper {
+    height: 120px;
+}
+
+.team-logo-placeholder {
+    font-size: 2.5rem;
+}
+
+.team-name {
+    font-size: 1.1rem;
+}
+
+.team-campaign {
+    padding: 0.5rem 0;
+}
+
+.campaign-item {
+    padding: 0.25rem;
+}
+
+.campaign-value {
+    font-size: 0.95rem;
+}
+
+.card-action {
+    padding-top: 0.5rem;
+}
+
+.action-text {
+    font-size: 0.85rem;
+}
+
+/* ========================================
+   CARDS DE JOGOS (Layout compacto)
+   ======================================== */
+.matches-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+}
+
+.match-card {
+    padding: 0;
+}
+
+.match-status {
+    padding: 0.4rem 1rem;
+    font-size: 0.75rem;
+}
+
+.rodada-badge {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.5rem;
+}
+
+.status-badge {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.5rem;
+}
+
+.match-content {
+    padding: 1rem;
+}
+
+/* Times em linha com placar central */
+.teams-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.team-block {
+    flex: 1;
+}
+
+.team-logo-wrapper {
+    width: 40px;
+    height: 40px;
+}
+
+.team-name {
+    font-size: 0.75rem;
+    max-width: 70px;
+}
+
+.score-block {
+    min-width: 50px;
+}
+
+.score-large {
+    font-size: 1.2rem;
+}
+
+.score-vs {
+    font-size: 0.55rem;
+}
+
+/* Informações abaixo do placar */
+.match-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+    padding: 0.5rem 0;
+    font-size: 0.7rem;
+}
+
+.detail-item {
+    width: 100%;
+}
+
+.detail-item i {
+    width: 16px;
+}
+
+.match-footer {
+    margin-top: 0.25rem;
+}
+
+/* ========================================
+   DETALHE DO TIME (Elenco)
+   ======================================== */
+.jogadores-grid-profissional {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem;
+}
+
+.jogador-card-profissional {
+    padding: 0.75rem 0.5rem;
+}
+
+.jogador-avatar {
+    width: 60px;
+    height: 60px;
+}
+
+.jogador-nome {
+    font-size: 0.85rem;
+}
+
+.jogador-posicao-badge {
+    font-size: 0.6rem;
+    padding: 0.2rem 0.5rem;
+}
+
+.jogador-numero {
+    width: 26px;
+    height: 26px;
+    font-size: 0.75rem;
+    top: 5px;
+    right: 5px;
+}
+
+/* ========================================
+   TABELA DE CLASSIFICAÇÃO
+   ======================================== */
+.table-classification {
+    overflow-x: auto;
+}
+
+.classification-table {
+    min-width: 600px; /* Permite rolagem horizontal */
+}
+
+.table-classification th,
+.table-classification td {
+    padding: 0.75rem 0.4rem;
+    font-size: 0.8rem;
+}
+
+.position-badge {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+}
+
+.team-cell {
+    min-width: 140px;
+}
+
+.team-logo-mini {
+    width: 24px;
+    height: 24px;
+}
+
+.team-name {
+    font-size: 0.8rem;
+}
+
+/* ========================================
+   ARTILHARIA
+   ======================================== */
+.artilharia-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+}
+
+.ranking-item {
+    padding: 0.5rem;
+}
+
+.ranking-posicao {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+    margin-right: 0.75rem;
+}
+
+.jogador-foto {
+    width: 32px;
+    height: 32px;
+}
+
+.jogador-nome {
+    font-size: 0.85rem;
+}
+
+.gols-count {
+    min-width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+}
+
+/* ========================================
+   PRÓXIMOS JOGOS
+   ======================================== */
+.jogo-info-compact {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+}
+
+/* ========================================
+   DASHBOARD DO USUÁRIO
+   ======================================== */
+.stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem;
+}
+
+.stat-card {
+    padding: 1rem;
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+}
+
+.dashboard-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+}
+
+/* ========================================
+   TABELAS RESPONSIVAS
+   ======================================== */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ========================================
+   BOTÕES E ÁREAS CLICÁVEIS (maiores)
+   ======================================== */
+.btn,
+.btn-back,
+.btn-admin,
+.filter-select,
+.form-control {
+    min-height: 44px; /* Tamanho mínimo recomendado para toque */
+}
+
+.btn-sm {
+    min-height: 36px;
+}
+
+.nav-link,
+.menu-item {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+/* ========================================
+   STATUS DE JOGOS (destaque visual)
+   ======================================== */
+.status-badge.finalizado {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--success);
+    font-weight: 600;
+}
+
+.status-badge.agendado {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--warning);
+    font-weight: 600;
+}
+
+.status-badge.ao-vivo {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--danger);
+    animation: pulse 1.5s infinite;
+    font-weight: 600;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* ========================================
+   AJUSTES PARA TABLETS (576px - 768px)
+   ======================================== */
+@media (min-width: 576px) {
+    html {
+        font-size: 15px;
+    }
+    
+    .container {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    
+    .teams-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .matches-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .jogadores-grid-profissional {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+/* ========================================
+   AJUSTES PARA DESKTOP (768px+)
+   ======================================== */
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+    
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    /* Volta ao layout original do desktop */
+    .header-content {
+        flex-direction: row;
+        align-items: center !important;
+    }
+    
+    .header-stats {
+        width: auto;
+    }
+    
+    .teams-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+    }
+    
+    .matches-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)) !important;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .jogadores-grid-profissional {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+    }
+    
+    .match-details {
+        flex-direction: row;
+        align-items: center;
+    }
+    
+    .navbar-brand .logo-text-sub {
+        display: block; /* Mostra subtítulo no desktop */
+    }
+    
+    .filtro-rodada,
+    .filtros-card,
+    .rounds-nav {
+        overflow: visible;
+        white-space: normal;
+    }
+    
+    .filtro-buttons {
+        flex-wrap: wrap;
+    }
+}
+
+/* ========================================
+   AJUSTES PARA TELAS GRANDES (1200px+)
+   ======================================== */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1140px;
+    }
+    
+    .teams-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+}
